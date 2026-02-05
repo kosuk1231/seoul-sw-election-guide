@@ -4,171 +4,189 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Vote, 
-  Users, 
   FileText, 
   UserPlus, 
   ArrowRight,
   MapPin,
   Calendar,
-  Heart
 } from "lucide-react";
 
 const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 civic-gradient-hero opacity-5" />
+      <section className="relative overflow-hidden bg-primary">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
           <div className="max-w-3xl mx-auto text-center animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 text-primary-foreground text-sm font-medium mb-6 backdrop-blur-sm">
               <Calendar className="h-4 w-4" />
               <span>2026년 6월 3일 지방선거</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-6">
-              <span className="text-primary">서울 지방선거</span>
-              <br />
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-primary-foreground mb-6">
+              서울 지방선거
+              <br className="hidden sm:block" />
               사회복지 정책 플랫폼
             </h1>
             
-            <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              시민과 사회복지 현장의 목소리를 정책으로 연결합니다.
+            <p className="text-lg sm:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto leading-relaxed">
+              사회복지 현장의 목소리를 정책으로 연결합니다.
               <br className="hidden sm:block" />
-              지역 선거구 정보를 확인하고, 사회복지 정책을 제안해주세요.
+              예비후보 등록과 정책 제안에 참여해주세요.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button asChild size="lg" className="w-full sm:w-auto gap-2">
-                <Link to="/candidates/si">
-                  <MapPin className="h-4 w-4" />
-                  선거구 확인하기
+              <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto gap-2 text-base px-8">
+                <Link to="/register">
+                  <UserPlus className="h-5 w-5" />
+                  예비후보 등록하기
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto gap-2">
+              <Button asChild size="lg" variant="outline" className="w-full sm:w-auto gap-2 text-base px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
                 <Link to="/policy">
-                  <FileText className="h-4 w-4" />
+                  <FileText className="h-5 w-5" />
                   정책 제안하기
                 </Link>
               </Button>
             </div>
           </div>
         </div>
+        
+        {/* Wave decoration */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="hsl(var(--background))"/>
+          </svg>
+        </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 sm:py-24 bg-muted/30">
+      {/* Main Features Section */}
+      <section className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-              무엇을 할 수 있나요?
+              주요 기능
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              시민 여러분의 참여로 더 나은 사회복지 정책을 만들어갑니다
+              2026 지방선거를 위한 사회복지 정책 플랫폼
             </p>
           </div>
           
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <FeatureCard
-              icon={Users}
-              title="시의원 선거구"
-              description="서울시의회 의원 선거구별 정보를 확인하세요"
-              href="/candidates/si"
-            />
-            <FeatureCard
-              icon={MapPin}
-              title="구의원 선거구"
-              description="구의회 의원 선거구별 정보를 확인하세요"
-              href="/candidates/gu"
-            />
-            <FeatureCard
-              icon={FileText}
-              title="정책 제안"
-              description="사회복지사들의 정책 아이디어를 제안해주세요"
-              href="/policy"
-            />
-            <FeatureCard
-              icon={UserPlus}
-              title="예비후보 등록"
-              description="출마를 준비 중이신가요? 정보를 등록해주세요"
-              href="/register"
-            />
+          <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
+            {/* Feature 1: Candidate Registration */}
+            <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-elevated group">
+              <CardContent className="p-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground mb-6 transition-transform group-hover:scale-110">
+                  <UserPlus className="h-7 w-7" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-3">예비후보 등록</h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  2026 서울 지방선거 시의원·구의원 출마를 준비하시는 분들의 정보를 등록해주세요. 
+                  관리자 승인 후 시민들에게 공개됩니다.
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    시의원 / 구의원 출마 등록
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    사회복지 공약 작성
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    선거구별 후보자 노출
+                  </li>
+                </ul>
+                <Button asChild className="w-full gap-2">
+                  <Link to="/register">
+                    예비후보 등록하기
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Feature 2: Policy Proposal */}
+            <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-elevated group">
+              <CardContent className="p-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground mb-6 transition-transform group-hover:scale-110">
+                  <FileText className="h-7 w-7" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-3">정책 제안</h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  사회복지 현장에서 느끼시는 정책적 개선 사항을 제안해주세요. 
+                  제안된 정책은 후보자들에게 전달됩니다.
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    사회복지사 정책 제안
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    분야별 정책 아이디어
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    후보자에게 정책 전달
+                  </li>
+                </ul>
+                <Button asChild variant="outline" className="w-full gap-2">
+                  <Link to="/policy">
+                    정책 제안하기
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
+        </div>
+      </section>
+
+      {/* Candidate Search Section */}
+      <section className="py-16 sm:py-24 bg-secondary/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="border-none shadow-elevated bg-card max-w-3xl mx-auto">
+            <CardContent className="p-8 sm:p-12">
+              <div className="text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mx-auto mb-6">
+                  <MapPin className="h-7 w-7" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+                  내 선거구 후보자 찾기
+                </h2>
+                <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+                  관리자 승인을 받은 예비후보자들의 정보를 선거구별로 확인하세요.
+                  시의원, 구의원 후보자를 한눈에 볼 수 있습니다.
+                </p>
+                <Button asChild size="lg" variant="outline" className="gap-2">
+                  <Link to="/candidates">
+                    <MapPin className="h-4 w-4" />
+                    후보자 확인하기
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
       {/* Stats Section */}
       <section className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-3 max-w-3xl mx-auto">
             <StatCard number="25" label="서울시 자치구" />
             <StatCard number="112" label="시의원 선거구" />
             <StatCard number="112" label="구의원 선거구" />
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="py-16 sm:py-24 bg-primary/5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="border-none shadow-elevated bg-card">
-            <CardContent className="p-8 sm:p-12">
-              <div className="flex flex-col lg:flex-row items-center gap-8">
-                <div className="flex-1 text-center lg:text-left">
-                  <div className="inline-flex items-center gap-2 text-primary mb-4">
-                    <Heart className="h-5 w-5 fill-primary" />
-                    <span className="text-sm font-medium">사회복지사를 위한 공간</span>
-                  </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-                    현장의 목소리를 정책으로
-                  </h2>
-                  <p className="text-muted-foreground max-w-xl">
-                    사회복지 현장에서 느끼시는 정책적 개선 사항이 있으신가요?
-                    여러분의 제안이 실제 정책으로 이어질 수 있도록 함께 만들어갑니다.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button asChild size="lg" className="gap-2">
-                    <Link to="/policy">
-                      정책 제안하기
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
     </Layout>
   );
 };
-
-interface FeatureCardProps {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  href: string;
-}
-
-function FeatureCard({ icon: Icon, title, description, href }: FeatureCardProps) {
-  return (
-    <Link to={href} className="group">
-      <Card className="h-full transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 border-border/50">
-        <CardContent className="p-6">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4 transition-transform group-hover:scale-110">
-            <Icon className="h-6 w-6" />
-          </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-          <div className="flex items-center gap-1 text-primary text-sm font-medium mt-4 group-hover:gap-2 transition-all">
-            자세히 보기 <ArrowRight className="h-4 w-4" />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
 
 interface StatCardProps {
   number: string;
@@ -177,8 +195,8 @@ interface StatCardProps {
 
 function StatCard({ number, label }: StatCardProps) {
   return (
-    <div className="text-center p-8 rounded-2xl bg-card shadow-card">
-      <p className="text-4xl sm:text-5xl font-bold text-primary mb-2">{number}</p>
+    <div className="text-center p-6 rounded-2xl bg-card shadow-card">
+      <p className="text-3xl sm:text-4xl font-bold text-primary mb-1">{number}</p>
       <p className="text-muted-foreground font-medium">{label}</p>
     </div>
   );

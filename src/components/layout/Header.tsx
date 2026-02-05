@@ -1,15 +1,14 @@
  import { useState } from "react";
  import { Link, useLocation } from "react-router-dom";
- import { Menu, X, Vote, Users, FileText, UserPlus } from "lucide-react";
+import { Menu, X, Vote, FileText, UserPlus, MapPin } from "lucide-react";
  import { Button } from "@/components/ui/button";
  import { cn } from "@/lib/utils";
  
  const navigation = [
    { name: "홈", href: "/", icon: Vote },
-   { name: "시의원 선거구", href: "/candidates/si", icon: Users },
-   { name: "구의원 선거구", href: "/candidates/gu", icon: Users },
-   { name: "정책 제안", href: "/policy", icon: FileText },
    { name: "예비후보 등록", href: "/register", icon: UserPlus },
+  { name: "정책 제안", href: "/policy", icon: FileText },
+  { name: "내 선거구 후보자", href: "/candidates", icon: MapPin },
  ];
  
  export function Header() {
