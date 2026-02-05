@@ -27,18 +27,15 @@
            <div className="space-y-4">
              <h4 className="text-sm font-semibold text-foreground">바로가기</h4>
              <div className="flex flex-col gap-2">
-               <Link to="/candidates/si" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                 시의원 선거구
-               </Link>
-               <Link to="/candidates/gu" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                 구의원 선거구
-               </Link>
-               <Link to="/policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                 정책 제안하기
-               </Link>
                <Link to="/register" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                  예비후보 등록
                </Link>
+              <Link to="/policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                정책 제안하기
+              </Link>
+              <Link to="/candidates" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                내 선거구 후보자 보기
+              </Link>
              </div>
            </div>
  
