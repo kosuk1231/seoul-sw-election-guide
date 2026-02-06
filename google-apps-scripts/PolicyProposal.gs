@@ -12,7 +12,8 @@ function doPost(e) {
       sheet = spreadsheet.insertSheet('정책 제안');
       // 헤더 추가
       sheet.appendRow([
-        '타임스탬프', '이름', '연락처', '이메일', '카테고리', '정책 제목', '정책 내용'
+        '타임스탬프', '이름', '연락처', '이메일', '카테고리', '정책 제목', 
+        '현황 및 문제점', '정책 제안 내용', '기대 효과'
       ]);
     }
     
@@ -27,7 +28,9 @@ function doPost(e) {
       data.email || '',
       data.category || '',
       data.title || '',
-      data.content || ''
+      data.currentIssue || '',
+      data.proposedSolution || '',
+      data.expectedEffect || ''
     ]);
     
     // 성공 응답

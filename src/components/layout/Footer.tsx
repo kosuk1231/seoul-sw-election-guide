@@ -44,7 +44,6 @@
              <h4 className="text-sm font-semibold text-foreground">운영</h4>
              <div className="space-y-2 text-sm text-muted-foreground">
                <p>서울특별시사회복지사협회</p>
-               <p>사회복지와 시민을 위한 정책 플랫폼</p>
              </div>
            </div>
          </div>
@@ -54,9 +53,9 @@
              <p className="text-xs text-muted-foreground">
                © 2026 서울특별시사회복지사협회. 모든 권리 보유.
              </p>
-             <p className="flex items-center gap-1 text-xs text-muted-foreground">
-               시민을 위해 <Heart className="h-3 w-3 text-primary fill-primary" /> 를 담아 만들었습니다
-             </p>
+              <p className="text-xs text-muted-foreground">
+                서울사회복지사의 목소리가 정책이 됩니다
+              </p>
            </div>
          </div>
        </div>

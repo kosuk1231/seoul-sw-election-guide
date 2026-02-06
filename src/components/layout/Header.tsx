@@ -20,14 +20,16 @@ import { Menu, X, Vote, FileText, UserPlus, MapPin } from "lucide-react";
        <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
          <div className="flex h-16 items-center justify-between">
            {/* Logo */}
-           <Link to="/" className="flex items-center gap-3 group">
-             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-transform group-hover:scale-105">
-               <Vote className="h-5 w-5" />
-             </div>
-             <div className="hidden sm:block">
-               <p className="text-sm font-semibold text-foreground">서울사회복지사 6.3 지방선거 플랫폼</p>
-             </div>
-           </Link>
+            <Link to="/" className="flex items-center gap-3 group">
+              <img 
+                src="/logo.png" 
+                alt="서울사회복지사협회 로고" 
+                className="h-10 w-auto transition-transform group-hover:scale-105"
+              />
+              <div className="hidden sm:block">
+                <p className="text-sm font-semibold text-foreground">서울사회사회복지사 6.3 지방선거 플랫폼</p>
+              </div>
+            </Link>
  
            {/* Desktop Navigation */}
            <div className="hidden md:flex md:items-center md:gap-1">

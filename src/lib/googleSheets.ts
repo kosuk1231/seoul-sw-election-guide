@@ -29,8 +29,6 @@ export async function submitPolicyToSheets(formData: any) {
     throw new Error('Google Apps Script URL이 설정되지 않았습니다. .env.local 파일을 확인해주세요.');
   }
 
-  // 정책 제안 내용 통합
-  const content = `현황: ${formData.currentIssue}\n\n제안 내용: ${formData.proposedSolution}${formData.expectedEffect ? `\n\n기대 효과: ${formData.expectedEffect}` : ''}`;
 
   const response = await fetch(scriptUrl, {
     method: 'POST',
@@ -44,7 +42,9 @@ export async function submitPolicyToSheets(formData: any) {
       email: formData.email,
       category: formData.category,
       title: formData.title,
-      content: content,
+      currentIssue: formData.currentIssue,
+      proposedSolution: formData.proposedSolution,
+      expectedEffect: formData.expectedEffect || '',
     }),
   });
 

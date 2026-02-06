@@ -84,8 +84,8 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
       
        setIsSubmitted(true);
        toast({
-         title: "출마자 등록이 완료되었습니다",
-         description: "Google Spreadsheet에 저장되었습니다. 확인 후 연락드리겠습니다.",
+         title: "정상적으로 등록되었습니다",
+         description: "내용을 확인 후 관리자가 등록할 예정입니다.",
        });
        
        // 폼 초기화

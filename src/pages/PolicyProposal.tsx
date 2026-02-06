@@ -69,8 +69,8 @@ import { submitPolicyToSheets } from "@/lib/googleSheets";
       
        setIsSubmitted(true);
        toast({
-         title: "정책 제안이 접수되었습니다",
-         description: "Google Spreadsheet에 저장되었습니다. 소중한 의견 감사합니다.",
+         title: "정상적으로 등록되었습니다",
+         description: "정책 제언에 감사합니다.",
        });
        
        // 폼 초기화
