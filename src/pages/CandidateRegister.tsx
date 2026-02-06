@@ -1,5 +1,7 @@
  import { useState } from "react";
  import { Layout } from "@/components/layout/Layout";
+import { FileUpload } from "@/components/FileUpload";
+import { validateImageFile, validateFlyerFile } from "@/lib/fileUpload";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
  import { Textarea } from "@/components/ui/textarea";
@@ -48,11 +50,18 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
      hasKickoffEvent: "",
      kickoffEventDate: "",
      kickoffEventDetails: "",
+    candidatePhoto: null as { base64: string; mimeType: string; extension: string } | null,
+    electionFlyer: null as { base64: string; mimeType: string; extension: string } | null,
    });
  
    const handleChange = (field: string, value: string) => {
      setFormData((prev) => ({ ...prev, [field]: value }));
    };
+
+
+  const handleFileChange = (field: string, fileData: { base64: string; mimeType: string; extension: string } | null) => {
+    setFormData((prev) => ({ ...prev, [field]: fileData }));
+  };
  
    const availableDistricts = siDistricts.filter(d => d.guName === selectedGu);
  

@@ -16,6 +16,8 @@ export async function submitCandidateToSheets(formData: any, agreedToTerms: bool
     body: JSON.stringify({
       ...formData,
       agreed: agreedToTerms,
+      candidatePhoto: formData.candidatePhoto,
+      electionFlyer: formData.electionFlyer,
     }),
   });
 
