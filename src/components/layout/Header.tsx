@@ -25,8 +25,7 @@ import { Menu, X, Vote, FileText, UserPlus, MapPin } from "lucide-react";
                <Vote className="h-5 w-5" />
              </div>
              <div className="hidden sm:block">
-               <p className="text-sm font-semibold text-foreground">2026 서울 지방선거</p>
-               <p className="text-xs text-muted-foreground">사회복지 정책 플랫폼</p>
+               <p className="text-sm font-semibold text-foreground">서울사회복지사 6.3 지방선거 플랫폼</p>
              </div>
            </Link>
  

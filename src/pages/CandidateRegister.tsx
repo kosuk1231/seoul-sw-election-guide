@@ -16,6 +16,7 @@
  import { UserPlus, Send, CheckCircle2, AlertCircle } from "lucide-react";
  import { useToast } from "@/hooks/use-toast";
  import { seoulGus, siDistricts } from "@/data/districts";
+import { submitCandidateToSheets } from "@/lib/googleSheets";
  
  const councilTypes = [
    { value: "si", label: "시의원" },
@@ -40,6 +41,13 @@
      careerSummary: "",
      welfarePolicy: "",
      socialMediaUrl: "",
+     hasSocialWorkerLicense: "",
+     hasPaidMembershipFee: "",
+     hasElectionOffice: "",
+     electionOfficeAddress: "",
+     hasKickoffEvent: "",
+     kickoffEventDate: "",
+     kickoffEventDetails: "",
    });
  
    const handleChange = (field: string, value: string) => {
@@ -60,31 +68,56 @@
        return;
      }
  
-     if (!formData.name || !formData.birthYear || !formData.phone || !formData.email || !formData.councilType || !formData.district) {
-       toast({
-         title: "필수 항목을 입력해주세요",
-         description: "이름, 생년, 연락처, 이메일, 출마 유형, 선거구는 필수입니다.",
-         variant: "destructive",
-       });
-       return;
-     }
+     if (!formData.name || !formData.birthYear || !formData.phone || !formData.email || !formData.councilType || !formData.district || !formData.hasSocialWorkerLicense || !formData.hasPaidMembershipFee || !formData.hasElectionOffice) {
+      toast({
+        title: "필수 항목을 입력해주세요",
+        description: "이름, 생년, 연락처, 이메일, 출마 유형, 선거구, 자격증 유무, 회비 납부 여부, 선거 사무소 여부는 필수입니다.",
+        variant: "destructive",
+      });
+      return;
+    }
  
      setIsSubmitting(true);
  
      try {
-       await new Promise((resolve) => setTimeout(resolve, 1500));
-       
+       await submitCandidateToSheets(formData, agreedToTerms);
+      
        setIsSubmitted(true);
        toast({
-         title: "예비후보 등록이 완료되었습니다",
-         description: "확인 후 연락드리겠습니다.",
+         title: "출마자 등록이 완료되었습니다",
+         description: "Google Spreadsheet에 저장되었습니다. 확인 후 연락드리겠습니다.",
        });
+       
+       // 폼 초기화
+       setFormData({
+         name: "",
+         birthYear: "",
+         phone: "",
+         email: "",
+         councilType: "",
+         district: "",
+         party: "",
+         currentPosition: "",
+         careerSummary: "",
+         welfarePolicy: "",
+         socialMediaUrl: "",
+         hasSocialWorkerLicense: "",
+         hasPaidMembershipFee: "",
+         hasElectionOffice: "",
+         electionOfficeAddress: "",
+         hasKickoffEvent: "",
+         kickoffEventDate: "",
+         kickoffEventDetails: "",
+       });
+       setAgreedToTerms(false);
+       setSelectedGu("");
      } catch (error) {
-       toast({
-         title: "오류가 발생했습니다",
-         description: "잠시 후 다시 시도해주세요.",
-         variant: "destructive",
-       });
+       console.error('제출 오류:', error);
+      toast({
+        title: "오류가 발생했습니다",
+        description: error instanceof Error ? error.message : "잠시 후 다시 시도해주세요.",
+        variant: "destructive",
+      });
      } finally {
        setIsSubmitting(false);
      }
@@ -119,6 +152,13 @@
                  careerSummary: "",
                  welfarePolicy: "",
                  socialMediaUrl: "",
+                 hasSocialWorkerLicense: "",
+                 hasPaidMembershipFee: "",
+                 hasElectionOffice: "",
+                 electionOfficeAddress: "",
+                 hasKickoffEvent: "",
+                 kickoffEventDate: "",
+                 kickoffEventDetails: "",
                });
                setAgreedToTerms(false);
              }}>
@@ -140,8 +180,8 @@
                <UserPlus className="h-6 w-6" />
              </div>
              <div>
-               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">예비후보 등록</h1>
-               <p className="text-muted-foreground">2026 서울 지방선거 출마 예정자 등록</p>
+               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">6.3 지방선거 출마자 등록</h1>
+               <p className="text-muted-foreground">2026년 6월 3일 서울 지방선거 출마자 정보 등록</p>
              </div>
            </div>
            
@@ -208,6 +248,38 @@
                        onChange={(e) => handleChange("email", e.target.value)}
                        required
                      />
+                   </div>
+                 </div>
+               </div>
+
+               {/* Social Worker Info */}
+               <div className="space-y-4">
+                 <h3 className="text-sm font-semibold text-foreground border-b pb-2">사회복지사 정보</h3>
+                 <div className="grid gap-4 sm:grid-cols-2">
+                   <div className="space-y-2">
+                     <Label htmlFor="hasSocialWorkerLicense">사회복지사 자격증 유무 *</Label>
+                     <Select value={formData.hasSocialWorkerLicense} onValueChange={(value) => handleChange("hasSocialWorkerLicense", value)}>
+                       <SelectTrigger>
+                         <SelectValue placeholder="선택" />
+                       </SelectTrigger>
+                       <SelectContent>
+                         <SelectItem value="none">없음</SelectItem>
+                         <SelectItem value="level1">1급</SelectItem>
+                         <SelectItem value="level2">2급</SelectItem>
+                       </SelectContent>
+                     </Select>
+                   </div>
+                   <div className="space-y-2">
+                     <Label htmlFor="hasPaidMembershipFee">서울시사회복지사협회 회비 납부 여부(2026년 포함) *</Label>
+                     <Select value={formData.hasPaidMembershipFee} onValueChange={(value) => handleChange("hasPaidMembershipFee", value)}>
+                       <SelectTrigger>
+                         <SelectValue placeholder="선택" />
+                       </SelectTrigger>
+                       <SelectContent>
+                         <SelectItem value="yes">납부</SelectItem>
+                         <SelectItem value="no">미납</SelectItem>
+                       </SelectContent>
+                     </Select>
                    </div>
                  </div>
                </div>
@@ -324,6 +396,84 @@
                    />
                  </div>
                </div>
+
+               {/* Election Office Info */}
+               <div className="space-y-4">
+                 <h3 className="text-sm font-semibold text-foreground border-b pb-2">선거 사무소</h3>
+                 <div className="space-y-2">
+                   <Label htmlFor="hasElectionOffice">선거 사무소 여부 *</Label>
+                   <Select value={formData.hasElectionOffice} onValueChange={(value) => {
+                     handleChange("hasElectionOffice", value);
+                     if (value === "no") {
+                       handleChange("electionOfficeAddress", "");
+                     }
+                   }}>
+                     <SelectTrigger>
+                       <SelectValue placeholder="선택" />
+                     </SelectTrigger>
+                     <SelectContent>
+                       <SelectItem value="yes">있음</SelectItem>
+                       <SelectItem value="no">없음</SelectItem>
+                     </SelectContent>
+                   </Select>
+                 </div>
+                 {formData.hasElectionOffice === "yes" && (
+                   <div className="space-y-2">
+                     <Label htmlFor="electionOfficeAddress">선거 사무소 주소</Label>
+                     <Input
+                       id="electionOfficeAddress"
+                       placeholder="서울시 OO구 OO동 OO번지"
+                       value={formData.electionOfficeAddress}
+                       onChange={(e) => handleChange("electionOfficeAddress", e.target.value)}
+                     />
+                   </div>
+                 )}
+               </div>
+
+                {/* Kickoff Event Info */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-foreground border-b pb-2">향후 일정</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="hasKickoffEvent">발대식 유무</Label>
+                    <Select value={formData.hasKickoffEvent} onValueChange={(value) => {
+                      handleChange("hasKickoffEvent", value);
+                      if (value === "no") {
+                        handleChange("kickoffEventDate", "");
+                        handleChange("kickoffEventDetails", "");
+                      }
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="yes">있음</SelectItem>
+                        <SelectItem value="no">없음</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {formData.hasKickoffEvent === "yes" && (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="kickoffEventDate">발대식 날짜</Label>
+                        <Input
+                          id="kickoffEventDate"
+                          type="date"
+                          value={formData.kickoffEventDate}
+                          onChange={(e) => handleChange("kickoffEventDate", e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="kickoffEventDetails">발대식 세부 정보</Label>
+                        <Input
+                          id="kickoffEventDetails"
+                          placeholder="시간, 장소 등"
+                          value={formData.kickoffEventDetails}
+                          onChange={(e) => handleChange("kickoffEventDetails", e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
  
                {/* Agreement */}
                <div className="space-y-4 pt-4 border-t">

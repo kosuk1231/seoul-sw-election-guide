@@ -25,9 +25,9 @@ const Index = () => {
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-primary-foreground mb-6">
-              서울 지방선거
+              서울사회복지사
               <br className="hidden sm:block" />
-              사회복지 정책 플랫폼
+              6.3 지방선거 플랫폼
             </h1>
             
             <p className="text-lg sm:text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto leading-relaxed">
@@ -61,29 +61,18 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Main Features Section */}
+      {/* Candidate Registration Section */}
       <section className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-              주요 기능
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              2026 지방선거를 위한 사회복지 정책 플랫폼
-            </p>
-          </div>
-          
-          <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-            {/* Feature 1: Candidate Registration */}
+          <div className="max-w-2xl mx-auto">
             <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-elevated group">
               <CardContent className="p-8">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground mb-6 transition-transform group-hover:scale-110">
                   <UserPlus className="h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">예비후보 등록</h3>
+                <h3 className="text-xl font-bold text-foreground mb-3">6.3 지방선거 출마자 등록</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  2026 서울 지방선거 시의원·구의원 출마를 준비하시는 분들의 정보를 등록해주세요. 
-                  관리자 승인 후 시민들에게 공개됩니다.
+                  2026 6.3 지방선거에서 서울시의 시의원·구의원 출마를 준비하시는 분들의 정보를 등록해주세요. 사회복지사 자격증 및 회비 납부 여부를 확인 후 공개처리 됩니다.
                 </p>
                 <ul className="space-y-2 text-sm text-muted-foreground mb-6">
                   <li className="flex items-center gap-2">
@@ -101,23 +90,29 @@ const Index = () => {
                 </ul>
                 <Button asChild className="w-full gap-2">
                   <Link to="/register">
-                    예비후보 등록하기
+                    6.3 지방선거 출마자 등록하기
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
 
-            {/* Feature 2: Policy Proposal */}
+      {/* Policy Proposal Section */}
+      <section className="py-16 sm:py-24 bg-secondary/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto">
+
             <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-elevated group">
               <CardContent className="p-8">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground mb-6 transition-transform group-hover:scale-110">
                   <FileText className="h-7 w-7" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">정책 제안</h3>
+                <h3 className="text-xl font-bold text-foreground mb-3">사회복지 관련 정책 제안</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  사회복지 현장에서 느끼시는 정책적 개선 사항을 제안해주세요. 
-                  제안된 정책은 후보자들에게 전달됩니다.
+                  사회복지 현장에서 느끼시는 정책적 개선 사항을 제안해주세요. 제안된 정책은 각 후보자의 정책 간담회를 통해 전달하겠습니다.
                 </p>
                 <ul className="space-y-2 text-sm text-muted-foreground mb-6">
                   <li className="flex items-center gap-2">
@@ -135,7 +130,7 @@ const Index = () => {
                 </ul>
                 <Button asChild variant="outline" className="w-full gap-2">
                   <Link to="/policy">
-                    정책 제안하기
+                    사회복지 관련 정책 제안하기
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>

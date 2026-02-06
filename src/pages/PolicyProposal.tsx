@@ -14,19 +14,18 @@
  } from "@/components/ui/select";
  import { FileText, Send, CheckCircle2 } from "lucide-react";
  import { useToast } from "@/hooks/use-toast";
+import { submitPolicyToSheets } from "@/lib/googleSheets";
  
  const policyCategories = [
-   "아동·청소년 복지",
-   "노인 복지",
-   "장애인 복지",
-   "가족 복지",
-   "지역사회 복지",
-   "정신건강 복지",
-   "의료 복지",
-   "주거 복지",
-   "고용·자립 지원",
-   "기타",
- ];
+  "임금(임금체계 등)",
+  "복리후생",
+  "경력인정 및 승급",
+  "고용(인력증원 등)",
+  "휴가",
+  "안전과 인권",
+  "일가정양립 등",
+  "기타",
+];
  
  export default function PolicyProposal() {
    const { toast } = useToast();
@@ -66,17 +65,31 @@
      // Here we would typically send to Google Sheets via Apps Script
      // For now, we'll simulate the submission
      try {
-       await new Promise((resolve) => setTimeout(resolve, 1500));
-       
+       await submitPolicyToSheets(formData);
+      
        setIsSubmitted(true);
        toast({
          title: "정책 제안이 접수되었습니다",
-         description: "소중한 의견 감사합니다. 검토 후 연락드리겠습니다.",
+         description: "Google Spreadsheet에 저장되었습니다. 소중한 의견 감사합니다.",
+       });
+       
+       // 폼 초기화
+       setFormData({
+         name: "",
+         organization: "",
+         email: "",
+         phone: "",
+         category: "",
+         title: "",
+         currentIssue: "",
+         proposedSolution: "",
+         expectedEffect: "",
        });
      } catch (error) {
+       console.error('제출 오류:', error);
        toast({
          title: "오류가 발생했습니다",
-         description: "잠시 후 다시 시도해주세요.",
+         description: error instanceof Error ? error.message : "잠시 후 다시 시도해주세요.",
          variant: "destructive",
        });
      } finally {
@@ -117,8 +130,8 @@
                <FileText className="h-6 w-6" />
              </div>
              <div>
-               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">정책 제안</h1>
-               <p className="text-muted-foreground">사회복지 현장의 목소리를 들려주세요</p>
+               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">사회복지 관련 정책 제안</h1>
+              <p className="text-muted-foreground">사회복지 현장의 목소리를 들려주세요</p>
              </div>
            </div>
            <p className="text-muted-foreground leading-relaxed">
