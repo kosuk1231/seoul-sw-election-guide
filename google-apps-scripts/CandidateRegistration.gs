@@ -12,7 +12,7 @@ function doPost(e) {
       sheet = spreadsheet.insertSheet('출마자 등록');
       // 헤더 추가
       sheet.appendRow([
-        '타임스탬프', '이름', '출생연도', '연락처', '이메일', '의회 종류', 
+        '타임스탬프', '이름', '생년월일', '연락처', '이메일', '의회 종류', 
         '선거구', '사회복지사 자격', '회비 납부', '선거 사무소', '사무소 주소',
         '발대식 유무', '발대식 날짜', '발대식 정보', '경력 요약', '핵심 정책', '동의'
       ]);
@@ -25,7 +25,7 @@ function doPost(e) {
     sheet.appendRow([
       new Date(), // 타임스탬프
       data.name || '',
-      data.birthYear || '',
+      data.birthDate || '',
       data.phone || '',
       data.email || '',
       data.councilType || '',

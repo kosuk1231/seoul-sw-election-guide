@@ -31,7 +31,7 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
    const [selectedGu, setSelectedGu] = useState("");
    const [formData, setFormData] = useState({
      name: "",
-     birthYear: "",
+     birthDate: "",
      phone: "",
      email: "",
      councilType: "",
@@ -68,7 +68,7 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
        return;
      }
  
-     if (!formData.name || !formData.birthYear || !formData.phone || !formData.email || !formData.councilType || !formData.district || !formData.hasSocialWorkerLicense || !formData.hasPaidMembershipFee || !formData.hasElectionOffice) {
+     if (!formData.name || !formData.birthDate || !formData.phone || !formData.email || !formData.councilType || !formData.district || !formData.hasSocialWorkerLicense || !formData.hasPaidMembershipFee || !formData.hasElectionOffice) {
       toast({
         title: "필수 항목을 입력해주세요",
         description: "이름, 생년, 연락처, 이메일, 출마 유형, 선거구, 자격증 유무, 회비 납부 여부, 선거 사무소 여부는 필수입니다.",
@@ -91,7 +91,7 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
        // 폼 초기화
        setFormData({
          name: "",
-         birthYear: "",
+         birthDate: "",
          phone: "",
          email: "",
          councilType: "",
@@ -142,7 +142,7 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
                setIsSubmitted(false);
                setFormData({
                  name: "",
-                 birthYear: "",
+                 birthDate: "",
                  phone: "",
                  email: "",
                  councilType: "",
@@ -217,12 +217,12 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
                      />
                    </div>
                    <div className="space-y-2">
-                     <Label htmlFor="birthYear">출생연도 *</Label>
+                     <Label htmlFor="birthDate">생년월일 *</Label>
                      <Input
-                       id="birthYear"
+                       id="birthDate"
                        placeholder="1980"
-                       value={formData.birthYear}
-                       onChange={(e) => handleChange("birthYear", e.target.value)}
+                       value={formData.birthDate}
+                       onChange={(e) => handleChange("birthDate", e.target.value)}
                        required
                      />
                    </div>
