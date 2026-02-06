@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { SeoulMap } from "@/components/SeoulMap";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
@@ -179,6 +180,14 @@ const Index = () => {
           </div>
         </div>
       </section>
+    
+      {/* 서울시 선거구 지도 */}
+      <section className="py-16 sm:py-24 bg-muted/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <SeoulMap />
+        </div>
+      </section>
+
     </Layout>
   );
 };
