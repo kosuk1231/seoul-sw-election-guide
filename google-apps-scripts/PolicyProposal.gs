@@ -1,10 +1,10 @@
 // 정책 제안용 Google Apps Script
-// 스프레드시트 ID: 1nPdF1o1HPVQ4f_Yzl-iq-HWCgJb7m47BN5U2UAm38c0
+// 스프레드시트 ID: 1SFORB19gn_EeQSgd7HhllFMtiKnpw-laHBkM-o1_pMg
 
 function doPost(e) {
   try {
     // 스프레드시트 열기
-    const spreadsheet = SpreadsheetApp.openById('1nPdF1o1HPVQ4f_Yzl-iq-HWCgJb7m47BN5U2UAm38c0');
+    const spreadsheet = SpreadsheetApp.openById('1SFORB19gn_EeQSgd7HhllFMtiKnpw-laHBkM-o1_pMg');
     
     // "정책 제안" 시트 가져오기 (없으면 생성)
     let sheet = spreadsheet.getSheetByName('정책 제안');
