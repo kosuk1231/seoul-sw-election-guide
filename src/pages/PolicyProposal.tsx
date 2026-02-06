@@ -106,10 +106,10 @@ import { submitPolicyToSheets } from "@/lib/googleSheets";
                <CheckCircle2 className="h-8 w-8" />
              </div>
              <h1 className="text-2xl font-bold text-foreground mb-4">
-               정책 제안이 접수되었습니다
+               정상적으로 등록되었습니다
              </h1>
              <p className="text-muted-foreground mb-8">
-               소중한 의견 감사합니다. 제안해주신 내용은 검토 후 정책 개발에 반영하겠습니다.
+               정책 제안에 감사합니다.
              </p>
              <Button onClick={() => setIsSubmitted(false)}>
                새로운 제안하기

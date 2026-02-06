@@ -13,8 +13,8 @@
                  <Vote className="h-5 w-5" />
                </div>
                <div>
-                 <p className="text-sm font-semibold text-foreground">2026 서울 지방선거</p>
-                 <p className="text-xs text-muted-foreground">사회복지 정책 플랫폼</p>
+                 <p className="text-base font-semibold text-foreground">2026 서울 지방선거</p>
+                 <p className="text-sm text-muted-foreground">사회복지 정책 플랫폼</p>
                </div>
              </Link>
              <p className="text-sm text-muted-foreground leading-relaxed">

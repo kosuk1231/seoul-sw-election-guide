@@ -27,7 +27,7 @@ import { Menu, X, Vote, FileText, UserPlus, MapPin } from "lucide-react";
                 className="h-10 w-auto transition-transform group-hover:scale-105"
               />
               <div className="hidden sm:block">
-                <p className="text-sm font-semibold text-foreground">서울사회사회복지사 6.3 지방선거 플랫폼</p>
+                <p className="text-base font-semibold text-foreground">서울사회사회복지사 6.3 지방선거 플랫폼</p>
               </div>
             </Link>
  

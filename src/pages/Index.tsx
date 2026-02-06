@@ -24,7 +24,7 @@ const Index = () => {
               <span>2026년 6월 3일 지방선거</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-primary-foreground mb-6">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-primary-foreground mb-6">
               서울사회복지사
               <br className="hidden sm:block" />
               6.3 지방선거 플랫폼
