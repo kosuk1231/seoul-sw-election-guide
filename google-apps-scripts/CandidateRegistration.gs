@@ -3,7 +3,7 @@
 
 // Google Drive 폴더 ID (업로드할 폴더)
 // 사용 전에 실제 Google Drive 폴더 ID로 변경 필요
-const DRIVE_FOLDER_ID = 'YOUR_FOLDER_ID_HERE'; // 폴더 우클릭 > 공유 > 링크복사에서 ID 확인
+const DRIVE_FOLDER_ID = '1q84w1_3XiH8JPa961Z85TdFxuYM61HKB'; // 폴더 우클릭 > 공유 > 링크복사에서 ID 확인
 
 /**
  * 파일을 Google Drive에 업로드
