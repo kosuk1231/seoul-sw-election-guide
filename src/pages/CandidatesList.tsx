@@ -11,7 +11,8 @@
    SelectTrigger,
    SelectValue,
  } from "@/components/ui/select";
- import { Search, MapPin, Users, Building2, UserCircle } from "lucide-react";
+ import { Button } from "@/components/ui/button";
+ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw } from "lucide-react";
  import { siDistricts, seoulGus } from "@/data/districts";
  import { fetchCandidatesFromSheets, type Candidate } from "@/lib/googleSheets";
  
@@ -21,6 +22,7 @@
    const [councilType, setCouncilType] = useState<"si" | "gu">("si");
    const [candidates, setCandidates] = useState<Candidate[]>([]);
    const [loading, setLoading] = useState(true);
+   const [refreshing, setRefreshing] = useState(false);
 
    // 후보자 데이터 가져오기
    useEffect(() => {
@@ -37,6 +39,19 @@
      }
      loadCandidates();
    }, []);
+
+  // 수동 새로고침 함수
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const data = await fetchCandidatesFromSheets();
+      setCandidates(data);
+    } catch (error) {
+      console.error('Failed to refresh candidates:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
    const filteredCandidates = useMemo(() => {
      return candidates.filter((candidate) => {
@@ -62,17 +77,29 @@
      <Layout>
        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
          {/* Header */}
-         <div className="mb-8">
-           <div className="flex items-center gap-3 mb-4">
-             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-               <MapPin className="h-6 w-6" />
-             </div>
-             <div>
-               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">내 선거구 후보자</h1>
-               <p className="text-muted-foreground">승인된 예비후보자 정보를 확인하세요</p>
-             </div>
-           </div>
-         </div>
+        <div className="mb-8">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                <MapPin className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">내 선거구 후보자</h1>
+                <p className="text-muted-foreground">승인된 예비후보자 정보를 확인하세요</p>
+              </div>
+            </div>
+            <Button
+              onClick={handleRefresh}
+              disabled={refreshing || loading}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">새로고침</span>
+            </Button>
+          </div>
+        </div>
  
          {/* Council Type Tabs */}
          <Tabs value={councilType} onValueChange={(v) => setCouncilType(v as "si" | "gu")} className="mb-6">

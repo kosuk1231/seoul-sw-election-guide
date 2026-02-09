@@ -91,10 +91,12 @@ export async function fetchCandidatesFromSheets(): Promise<Candidate[]> {
   }
 
   try {
-    // GET 요청으로 데이터 가져오기
-    const response = await fetch(scriptUrl + '?action=getCandidates', {
+    // GET 요청으로 데이터 가져오기 (타임스탬프로 캐시 우회)
+    const timestamp = new Date().getTime();
+    const response = await fetch(scriptUrl + `?action=getCandidates&t=${timestamp}`, {
       method: 'GET',
       mode: 'cors',
+      cache: 'no-store', // 브라우저 캐시 비활성화
     });
 
     if (!response.ok) {
