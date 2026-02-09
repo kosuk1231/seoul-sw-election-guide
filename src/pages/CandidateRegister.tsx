@@ -170,6 +170,8 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
                  hasKickoffEvent: "",
                  kickoffEventDate: "",
                  kickoffEventDetails: "",
+                 candidatePhoto: null,
+                 electionFlyer: null,
                });
                setAgreedToTerms(false);
              }}>
