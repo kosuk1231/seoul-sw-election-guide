@@ -117,6 +117,8 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
          hasKickoffEvent: "",
          kickoffEventDate: "",
          kickoffEventDetails: "",
+         candidatePhoto: null,
+         electionFlyer: null,
        });
        setAgreedToTerms(false);
        setSelectedGu("");
@@ -482,6 +484,33 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
                       </div>
                     </div>
                   )}
+                </div>
+
+                {/* 후보자 사진 및 선거공보물 업로드 */}
+                <div className="space-y-4 pt-4 border-t">
+                  <h3 className="text-lg font-semibold text-foreground">후보자 사진 및 선거공보물 등록</h3>
+                  
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <FileUpload
+                      label="후보자 사진"
+                      accept=".jpg,.jpeg,.png,.webp"
+                      onFileSelect={(fileData) => handleFileChange("candidatePhoto", fileData)}
+                      validateFile={validateImageFile}
+                      preview={true}
+                    />
+                    
+                    <FileUpload
+                      label="선거공보물"
+                      accept=".jpg,.jpeg,.png,.webp,.pdf"
+                      onFileSelect={(fileData) => handleFileChange("electionFlyer", fileData)}
+                      validateFile={validateFlyerFile}
+                      preview={true}
+                    />
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    * 후보자 사진과 선거공보물은 선택사항입니다. 이미지는 JPG, PNG, WebP 형식만 가능하며, 공보물은 PDF도 업로드 가능합니다.
+                  </p>
                 </div>
  
                {/* Agreement */}
