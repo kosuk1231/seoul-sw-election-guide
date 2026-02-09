@@ -136,16 +136,39 @@ export function calculateAge(birthDate: string): string {
   return `만 ${age}세`;
 }
 
+const CACHE_KEY = 'cached_candidates';
+const CACHE_TIMESTAMP_KEY = 'cached_candidates_timestamp';
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
 /**
  * Google Sheets에서 후보자 데이터를 가져옵니다
+ * @param forceRefresh 캐시를 무시하고 새로고침 할지 여부
  * @returns 승인되고 노출 여부가 TRUE인 후보자 목록
  */
-export async function fetchCandidatesFromSheets(): Promise<Candidate[]> {
+export async function fetchCandidatesFromSheets(forceRefresh = false): Promise<Candidate[]> {
   const scriptUrl = import.meta.env.VITE_CANDIDATE_SCRIPT_URL;
   
   if (!scriptUrl) {
     console.error('Google Apps Script URL이 설정되지 않았습니다.');
     return [];
+  }
+
+  // 1. Check Cache
+  if (!forceRefresh) {
+    try {
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const cachedTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+
+      if (cachedData && cachedTimestamp) {
+        const now = new Date().getTime();
+        if (now - parseInt(cachedTimestamp) < CACHE_DURATION) {
+          console.log('Serving candidates from cache');
+          return JSON.parse(cachedData);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to read from cache', e);
+    }
   }
 
   try {
@@ -202,6 +225,14 @@ export async function fetchCandidatesFromSheets(): Promise<Candidate[]> {
         approved: true, // 노출 여부가 TRUE면 승인된 것으로 간주
         timestamp: row.timestamp || new Date().toISOString(),
       }));
+
+    // 2. Save to Cache
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(candidates));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, String(new Date().getTime()));
+    } catch (e) {
+      console.warn('Failed to save to cache', e);
+    }
 
     return candidates;
   } catch (error) {
