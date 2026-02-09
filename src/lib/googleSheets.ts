@@ -62,20 +62,78 @@ export interface Candidate {
   email: string;
   councilType: 'si' | 'gu';
   district: string;
-  hasSocialWorkerLicense: boolean;
+  party?: string;
+  currentPosition?: string;
+  socialMediaUrl?: string;
+  hasSocialWorkerLicense: string; // 'level1', 'level2', 'none', or boolean (legacy)
   hasPaidMembershipFee: boolean;
   hasElectionOffice: boolean;
   officeAddress?: string;
-  hasKickoffEvent?: boolean;
+  hasKickoffEvent: boolean;
   kickoffEventDate?: string;
   kickoffEventDetails?: string;
-  careerSummary?: string;
+  careerSummary: string;
   welfarePolicy?: string;
   candidatePhotoUrl?: string;
   electionFlyerUrl?: string;
   isVisible: boolean;
   approved: boolean;
   timestamp: string;
+}
+
+// 구글 드라이브 이미지 URL을 썸네일/다운로드 URL로 변환
+// 구글 드라이브 이미지 URL을 썸네일/다운로드 URL로 변환
+export function getGoogleDriveImageUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  
+  // 이미 변환된 경우
+  if (url.includes('googleusercontent.com') || url.includes('export=view')) return url;
+
+  // 1. /d/ID/ 패턴 확인
+  const match1 = url.match(/\/d\/(.+?)(\/|$)/);
+  if (match1 && match1[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match1[1]}`;
+  }
+
+  // 2. id=ID 패턴 확인
+  const match2 = url.match(/id=([^&]+)/);
+  if (match2 && match2[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match2[1]}`;
+  }
+  
+  return url;
+}
+
+// 생년월일(YYMMDD)로 만 나이 계산
+export function calculateAge(birthDate: string): string {
+  if (!birthDate || birthDate.length !== 6) return birthDate;
+  
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1;
+  const currentDay = today.getDate();
+  
+  let yearPrefix = '19';
+  const yearSuffix = parseInt(birthDate.substring(0, 2));
+  
+  // 30년생 이상은 1900년대, 그 외(00~29)는 2000년대로 가정 (혹은 현재 연도 기준 판단)
+  // 여기서는 간단히 금년도 뒷자리보다 크면 1900년대, 작으면 2000년대로 가정
+  if (yearSuffix <= (currentYear % 100)) {
+    yearPrefix = '20';
+  }
+  
+  const birthYear = parseInt(yearPrefix + birthDate.substring(0, 2));
+  const birthMonth = parseInt(birthDate.substring(2, 4));
+  const birthDay = parseInt(birthDate.substring(4, 6));
+  
+  let age = currentYear - birthYear;
+  
+  // 생일이 안 지났으면 1살 뺌
+  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+    age--;
+  }
+  
+  return `만 ${age}세`;
 }
 
 /**
@@ -112,12 +170,15 @@ export async function fetchCandidatesFromSheets(): Promise<Candidate[]> {
       .map((row: any, index: number) => ({
         id: `candidate-${index}`,
         name: row.name || '',
-        birthDate: row.birthDate || '',
+        birthDate: String(row.birthDate || ''), // 문자열로 변환
         phone: row.phone || '',
         email: row.email || '',
         councilType: row.councilType || 'si',
         district: row.district || '',
-        hasSocialWorkerLicense: row.hasSocialWorkerLicense === 'TRUE' || row.hasSocialWorkerLicense === true,
+        party: row.party || '',
+        currentPosition: row.currentPosition || '',
+        socialMediaUrl: row.socialMediaUrl || '',
+        hasSocialWorkerLicense: String(row.hasSocialWorkerLicense || ''), // 문자열로 변환
         hasPaidMembershipFee: row.hasPaidMembershipFee === 'TRUE' || row.hasPaidMembershipFee === true,
         hasElectionOffice: row.hasElectionOffice === 'TRUE' || row.hasElectionOffice === true,
         officeAddress: row.officeAddress || '',
@@ -126,7 +187,7 @@ export async function fetchCandidatesFromSheets(): Promise<Candidate[]> {
         kickoffEventDetails: row.kickoffEventDetails || '',
         careerSummary: row.careerSummary || '',
         welfarePolicy: row.welfarePolicy || '',
-        candidatePhotoUrl: row.candidatePhotoUrl || '',
+        candidatePhotoUrl: getGoogleDriveImageUrl(row.candidatePhotoUrl),
         electionFlyerUrl: row.electionFlyerUrl || '',
         isVisible: row.isVisible === 'TRUE' || row.isVisible === true,
         approved: true, // 노출 여부가 TRUE면 승인된 것으로 간주

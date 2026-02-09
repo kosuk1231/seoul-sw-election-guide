@@ -24,6 +24,7 @@ import { submitPolicyToSheets } from "@/lib/googleSheets";
   "휴가",
   "안전과 인권",
   "일가정양립 등",
+  "대시민복지정책",
   "기타",
 ];
  

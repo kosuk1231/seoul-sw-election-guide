@@ -1,9 +1,17 @@
- import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
  import { Layout } from "@/components/layout/Layout";
  import { Input } from "@/components/ui/input";
- import { Card, CardContent } from "@/components/ui/card";
- import { Badge } from "@/components/ui/badge";
- import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
  import {
    Select,
    SelectContent,
@@ -12,9 +20,9 @@
    SelectValue,
  } from "@/components/ui/select";
  import { Button } from "@/components/ui/button";
- import { Search, MapPin, Users, Building2, UserCircle, RefreshCw } from "lucide-react";
+import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Phone, Mail, Globe, FileText, Calendar, BadgeCheck, Coins, User } from "lucide-react";
  import { siDistricts, seoulGus } from "@/data/districts";
- import { fetchCandidatesFromSheets, type Candidate } from "@/lib/googleSheets";
+ import { fetchCandidatesFromSheets, type Candidate, calculateAge } from "@/lib/googleSheets";
  
  export default function CandidatesList() {
    const [searchTerm, setSearchTerm] = useState("");
@@ -148,38 +156,219 @@
                총 <span className="font-semibold text-foreground">{filteredCandidates.length}</span>명의 후보자
              </p>
              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-               {filteredCandidates.map((candidate) => (
-                 <Card key={candidate.id} className="hover:shadow-card transition-shadow">
-                   <CardContent className="p-5">
-                     <div className="flex items-start gap-4">
-                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
-                         <UserCircle className="h-6 w-6" />
-                       </div>
-                       <div className="flex-1 min-w-0">
-                         <div className="flex items-center gap-2 mb-1">
-                           <h3 className="font-semibold text-foreground">{candidate.name}</h3>
-                           <Badge variant="secondary" className="text-xs">
-                             {candidate.party}
-                           </Badge>
-                         </div>
-                         <p className="text-sm text-muted-foreground mb-2">
-                           {candidate.districtName}
-                         </p>
-                         {candidate.currentPosition && (
-                           <p className="text-xs text-muted-foreground mb-2">
-                             {candidate.currentPosition}
-                           </p>
-                         )}
-                         {candidate.welfarePolicy && (
-                           <p className="text-sm text-foreground/80 line-clamp-2">
-                             📋 {candidate.welfarePolicy}
-                           </p>
-                         )}
-                       </div>
-                     </div>
-                   </CardContent>
-                 </Card>
-               ))}
+                {filteredCandidates.map((candidate) => (
+                  <Dialog key={candidate.id}>
+                    <DialogTrigger asChild>
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group h-full flex flex-col">
+                        <div className="aspect-[3/4] relative overflow-hidden bg-muted">
+                          {candidate.candidatePhotoUrl ? (
+                            <img
+                              src={candidate.candidatePhotoUrl}
+                              alt={candidate.name}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-secondary">
+                              <User className="h-20 w-20 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                            {candidate.councilType === "si" ? "시의원" : "구의원"}
+                          </div>
+                        </div>
+                        
+                        <CardHeader className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-xl font-bold">{candidate.name}</CardTitle>
+                            {candidate.party && (
+                              <span className="text-sm font-medium text-primary px-2 py-1 rounded bg-primary/10">
+                                {candidate.party}
+                              </span>
+                            )}
+                          </div>
+                          <CardDescription className="text-base font-medium text-foreground/80">
+                            {candidate.district}
+                          </CardDescription>
+                        </CardHeader>
+                        
+                        <CardContent className="space-y-3 flex-grow p-5 pt-0">
+                          {candidate.currentPosition && (
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {candidate.currentPosition}
+                            </p>
+                          )}
+                          
+                          <div className="pt-2 flex flex-wrap gap-2">
+                            {candidate.hasSocialWorkerLicense && candidate.hasSocialWorkerLicense !== 'false' && candidate.hasSocialWorkerLicense !== 'none' && (
+                              <div className="flex items-center gap-1 text-xs bg-secondary px-2 py-1 rounded text-secondary-foreground">
+                                <BadgeCheck className="h-3 w-3" />
+                                {candidate.hasSocialWorkerLicense === 'level1' ? '사회복지사 1급' : 
+                                 candidate.hasSocialWorkerLicense === 'level2' ? '사회복지사 2급' : '사회복지사'}
+                              </div>
+                            )}
+                            {candidate.hasPaidMembershipFee && (
+                              <div className="flex items-center gap-1 text-xs bg-secondary px-2 py-1 rounded text-secondary-foreground">
+                                <Coins className="h-3 w-3" />
+                                회비납부
+                              </div>
+                            )}
+                          </div>
+                          
+                          <Button variant="outline" className="w-full mt-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                            상세 정보 보기
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </DialogTrigger>
+                    
+                    <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto w-[95vw] rounded-xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold flex items-center gap-2 flex-wrap">
+                          {candidate.name} 후보자 상세 정보
+                          {candidate.party && (
+                            <span className="text-base font-normal text-muted-foreground bg-secondary px-2 py-1 rounded-md text-sm">
+                              {candidate.party}
+                            </span>
+                          )}
+                        </DialogTitle>
+                        <DialogDescription className="text-lg text-foreground/80 mt-2">
+                          {candidate.district} | {candidate.councilType === "si" ? "시의원" : "구의원"} 예비후보
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="grid md:grid-cols-[300px_1fr] gap-6 py-4">
+                        {/* Left Column: Photo & Basic Info */}
+                        <div className="space-y-4">
+                          <div className="aspect-[3/4] relative overflow-hidden rounded-lg bg-muted border">
+                            {candidate.candidatePhotoUrl ? (
+                              <img
+                                src={candidate.candidatePhotoUrl}
+                                alt={candidate.name}
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-secondary">
+                                <User className="h-20 w-20 text-muted-foreground" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="space-y-2 text-sm p-4 bg-muted/30 rounded-lg">
+                             <div className="flex items-center gap-2">
+                              {/* 생년월일 라벨 삭제 requested by user */}
+                              <div>{calculateAge(candidate.birthDate)}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-muted-foreground" />
+                              <div>{candidate.phone}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Mail className="h-4 w-4 text-muted-foreground" />
+                              <div className="break-all">{candidate.email}</div>
+                            </div>
+                            {candidate.socialMediaUrl && (
+                              <div className="pt-2 border-t mt-2">
+                                <a 
+                                  href={candidate.socialMediaUrl.startsWith('http') ? candidate.socialMediaUrl : `https://${candidate.socialMediaUrl}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 text-primary hover:underline font-medium"
+                                >
+                                  <Globe className="h-4 w-4" />
+                                  홈페이지/SNS 방문하기
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {candidate.electionFlyerUrl && (
+                            <Button className="w-full" asChild>
+                              <a href={candidate.electionFlyerUrl} target="_blank" rel="noopener noreferrer">
+                                <FileText className="mr-2 h-4 w-4" />
+                                선거공보물 보기
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                        
+                        {/* Right Column: Detailed Info */}
+                        <div className="space-y-6">
+                           {/* Social Worker Badge - Moved to top */}
+                           {candidate.hasSocialWorkerLicense && candidate.hasSocialWorkerLicense !== 'false' && candidate.hasSocialWorkerLicense !== 'none' && (
+                              <div className="mb-4">
+                                <span className="inline-flex items-center px-4 py-1.5 rounded-full text-base font-bold bg-green-100 text-green-800 border border-green-200 shadow-sm">
+                                  <BadgeCheck className="mr-2 h-5 w-5" />
+                                  {candidate.hasSocialWorkerLicense === 'level1' ? '사회복지사 1급' : 
+                                   candidate.hasSocialWorkerLicense === 'level2' ? '사회복지사 2급' : '사회복지사 자격 보유'}
+                                </span>
+                              </div>
+                            )}
+
+                          <div className="space-y-3">
+                            <h4 className="font-semibold text-lg flex items-center gap-2 border-b pb-2 text-primary">
+                               <UserCircle className="h-5 w-5" /> 현재 직책/직업
+                            </h4>
+                            <p className="text-foreground/90 whitespace-pre-wrap pl-1">
+                              {candidate.currentPosition || "정보 없음"}
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <h4 className="font-semibold text-lg flex items-center gap-2 border-b pb-2 text-primary">
+                               <Building2 className="h-5 w-5" /> 주요 경력
+                            </h4>
+                            <p className="text-foreground/90 whitespace-pre-wrap leading-relaxed pl-1 text-sm bg-muted/20 p-3 rounded-md">
+                              {candidate.careerSummary || "정보 없음"}
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <h4 className="font-semibold text-lg flex items-center gap-2 border-b pb-2 text-primary">
+                               <FileText className="h-5 w-5" /> 사회복지 관련 공약/정책
+                            </h4>
+                            <p className="text-foreground/90 whitespace-pre-wrap leading-relaxed pl-1 text-sm bg-muted/20 p-3 rounded-md">
+                              {candidate.welfarePolicy || "정보 없음"}
+                            </p>
+                          </div>
+
+                          {(candidate.hasElectionOffice || candidate.hasKickoffEvent) && (
+                            <div className="bg-secondary/30 p-4 rounded-lg space-y-3">
+                              {candidate.hasElectionOffice && (
+                                <div className="space-y-1">
+                                  <div className="font-medium flex items-center gap-2">
+                                    <MapPin className="h-4 w-4" /> 선거 사무소
+                                  </div>
+                                  <p className="text-sm pl-6">{candidate.officeAddress}</p>
+                                </div>
+                              )}
+                              {candidate.hasKickoffEvent && (
+                                <div className="space-y-1">
+                                  <div className="font-medium flex items-center gap-2">
+                                    <Calendar className="h-4 w-4" /> 발대식 일정
+                                  </div>
+                                  <p className="text-sm pl-6">
+                                    {candidate.kickoffEventDate} {candidate.kickoffEventDetails}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          <div className="flex gap-2 pt-2">
+                             {/* Removed Social Worker Badge from here */}
+                             {candidate.hasPaidMembershipFee && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                회비 납부 완료
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                ))}
              </div>
            </div>
          ) : (
