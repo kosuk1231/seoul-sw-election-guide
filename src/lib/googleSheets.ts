@@ -149,9 +149,12 @@ export async function fetchCandidatesFromSheets(): Promise<Candidate[]> {
   }
 
   try {
-    // GET 요청으로 데이터 가져오기 (타임스탬프로 캐시 우회)
-    const timestamp = new Date().getTime();
-    const response = await fetch(scriptUrl + `?action=getCandidates&t=${timestamp}`, {
+    // URL 생성 (URL 생성자를 사용하여 쿼리 파라미터 안전하게 추가)
+    const url = new URL(scriptUrl);
+    url.searchParams.append('action', 'getCandidates');
+    url.searchParams.append('t', String(new Date().getTime()));
+
+    const response = await fetch(url.toString(), {
       method: 'GET',
       mode: 'cors',
       cache: 'no-store', // 브라우저 캐시 비활성화
@@ -163,6 +166,12 @@ export async function fetchCandidatesFromSheets(): Promise<Candidate[]> {
     }
 
     const data = await response.json();
+    
+    // 데이터가 배열인지 확인
+    if (!Array.isArray(data)) {
+      console.error('Invalid data format received:', data);
+      return [];
+    }
     
     // 노출 여부가 TRUE인 후보자만 필터링
     const candidates: Candidate[] = data
