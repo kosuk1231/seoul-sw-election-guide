@@ -230,15 +230,17 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
                      />
                    </div>
                    <div className="space-y-2">
-                     <Label htmlFor="birthDate">생년월일 *</Label>
-                     <Input
-                       id="birthDate"
-                       placeholder="1980"
-                       value={formData.birthDate}
-                       onChange={(e) => handleChange("birthDate", e.target.value)}
-                       required
-                     />
-                   </div>
+                    <Label htmlFor="birthDate">생년월일 (YYMMDD)</Label>
+                    <Input
+                      id="birthDate"
+                      type="text"
+                      placeholder="901111"
+                      value={formData.birthDate}
+                      onChange={(e) => handleChange("birthDate", e.target.value)}
+                      maxLength={6}
+                      required
+                    />
+                  </div>
                  </div>
                  <div className="grid gap-4 sm:grid-cols-2">
                    <div className="space-y-2">
