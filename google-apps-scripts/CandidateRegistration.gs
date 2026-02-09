@@ -207,3 +207,208 @@ function doGet(e) {
     ).setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+/**
+ * ========================================
+ * 관리자 도구 - Google Sheets 커스텀 메뉴
+ * ========================================
+ */
+
+/**
+ * 스프레드시트가 열릴 때 자동으로 실행되어 커스텀 메뉴를 추가합니다
+ */
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('🔧 관리자 도구')
+    .addItem('✅ 선택한 행 승인 (노출)', 'approveSelectedRows')
+    .addItem('❌ 선택한 행 승인 취소 (숨김)', 'disapproveSelectedRows')
+    .addSeparator()
+    .addItem('📊 승인 통계 보기', 'showApprovalStatus')
+    .addToUi();
+}
+
+/**
+ * 선택된 행들의 노출 여부를 TRUE로 변경
+ */
+function approveSelectedRows() {
+  const spreadsheet = SpreadsheetApp.openById('1nPdF1o1HPVQ4f_Yzl-iq-HWCgJb7m47BN5U2UAm38c0');
+  const sheet = spreadsheet.getSheetByName('출마자 등록');
+  const ui = SpreadsheetApp.getUi();
+  
+  if (!sheet) {
+    ui.alert('오류', '"출마자 등록" 시트를 찾을 수 없습니다.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 선택된 범위 가져오기
+  const range = sheet.getActiveRange();
+  if (!range) {
+    ui.alert('안내', '승인할 행을 선택해주세요.\n(행 번호를 클릭하여 선택)', ui.ButtonSet.OK);
+    return;
+  }
+  
+  const startRow = range.getRow();
+  const numRows = range.getNumRows();
+  
+  // 헤더 행은 제외
+  if (startRow === 1) {
+    ui.alert('오류', '헤더 행은 승인할 수 없습니다.\n데이터 행을 선택해주세요.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 노출 여부 열 찾기
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const visibilityColumnIndex = headers.indexOf('노출 여부') + 1;
+  
+  if (visibilityColumnIndex === 0) {
+    ui.alert('오류', '"노출 여부" 열을 찾을 수 없습니다.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 확인 대화상자
+  const response = ui.alert(
+    '승인 확인',
+    `선택한 ${numRows}개 행의 노출 여부를 TRUE로 변경하시겠습니까?`,
+    ui.ButtonSet.YES_NO
+  );
+  
+  if (response !== ui.Button.YES) {
+    return;
+  }
+  
+  // 선택된 행들의 노출 여부를 TRUE로 변경
+  let updatedCount = 0;
+  for (let i = 0; i < numRows; i++) {
+    const currentRow = startRow + i;
+    const cell = sheet.getRange(currentRow, visibilityColumnIndex);
+    cell.setValue(true);
+    updatedCount++;
+  }
+  
+  ui.alert('완료', `${updatedCount}개 행이 승인되었습니다.\n웹사이트에서 새로고침하면 반영됩니다.`, ui.ButtonSet.OK);
+}
+
+/**
+ * 선택된 행들의 노출 여부를 FALSE로 변경
+ */
+function disapproveSelectedRows() {
+  const spreadsheet = SpreadsheetApp.openById('1nPdF1o1HPVQ4f_Yzl-iq-HWCgJb7m47BN5U2UAm38c0');
+  const sheet = spreadsheet.getSheetByName('출마자 등록');
+  const ui = SpreadsheetApp.getUi();
+  
+  if (!sheet) {
+    ui.alert('오류', '"출마자 등록" 시트를 찾을 수 없습니다.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 선택된 범위 가져오기
+  const range = sheet.getActiveRange();
+  if (!range) {
+    ui.alert('안내', '승인 취소할 행을 선택해주세요.\n(행 번호를 클릭하여 선택)', ui.ButtonSet.OK);
+    return;
+  }
+  
+  const startRow = range.getRow();
+  const numRows = range.getNumRows();
+  
+  // 헤더 행은 제외
+  if (startRow === 1) {
+    ui.alert('오류', '헤더 행은 승인 취소할 수 없습니다.\n데이터 행을 선택해주세요.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 노출 여부 열 찾기
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const visibilityColumnIndex = headers.indexOf('노출 여부') + 1;
+  
+  if (visibilityColumnIndex === 0) {
+    ui.alert('오류', '"노출 여부" 열을 찾을 수 없습니다.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 확인 대화상자
+  const response = ui.alert(
+    '승인 취소 확인',
+    `선택한 ${numRows}개 행의 노출 여부를 FALSE로 변경하시겠습니까?`,
+    ui.ButtonSet.YES_NO
+  );
+  
+  if (response !== ui.Button.YES) {
+    return;
+  }
+  
+  // 선택된 행들의 노출 여부를 FALSE로 변경
+  let updatedCount = 0;
+  for (let i = 0; i < numRows; i++) {
+    const currentRow = startRow + i;
+    const cell = sheet.getRange(currentRow, visibilityColumnIndex);
+    cell.setValue(false);
+    updatedCount++;
+  }
+  
+  ui.alert('완료', `${updatedCount}개 행의 승인이 취소되었습니다.\n웹사이트에서 새로고침하면 반영됩니다.`, ui.ButtonSet.OK);
+}
+
+/**
+ * 현재 승인 통계를 팝업으로 표시
+ */
+function showApprovalStatus() {
+  const spreadsheet = SpreadsheetApp.openById('1nPdF1o1HPVQ4f_Yzl-iq-HWCgJb7m47BN5U2UAm38c0');
+  const sheet = spreadsheet.getSheetByName('출마자 등록');
+  const ui = SpreadsheetApp.getUi();
+  
+  if (!sheet) {
+    ui.alert('오류', '"출마자 등록" 시트를 찾을 수 없습니다.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 전체 데이터 가져오기
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const rows = data.slice(1);
+  
+  // 노출 여부 열 찾기
+  const visibilityColumnIndex = headers.indexOf('노출 여부');
+  
+  if (visibilityColumnIndex === -1) {
+    ui.alert('오류', '"노출 여부" 열을 찾을 수 없습니다.', ui.ButtonSet.OK);
+    return;
+  }
+  
+  // 통계 계산
+  const totalCandidates = rows.filter(row => row[headers.indexOf('이름')]).length;
+  const approvedCandidates = rows.filter(row => 
+    row[visibilityColumnIndex] === true || row[visibilityColumnIndex] === 'TRUE'
+  ).length;
+  const pendingCandidates = totalCandidates - approvedCandidates;
+  
+  // 의회 종류별 통계
+  const councilTypeIndex = headers.indexOf('의회 종류');
+  const siCandidates = rows.filter(row => row[councilTypeIndex] === '시의원').length;
+  const guCandidates = rows.filter(row => row[councilTypeIndex] === '구의원').length;
+  
+  // 승인된 의회 종류별 통계
+  const approvedSi = rows.filter(row => 
+    row[councilTypeIndex] === '시의원' && 
+    (row[visibilityColumnIndex] === true || row[visibilityColumnIndex] === 'TRUE')
+  ).length;
+  const approvedGu = rows.filter(row => 
+    row[councilTypeIndex] === '구의원' && 
+    (row[visibilityColumnIndex] === true || row[visibilityColumnIndex] === 'TRUE')
+  ).length;
+  
+  // 결과 표시
+  const message = 
+    `📊 후보자 승인 통계\n\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `전체 등록: ${totalCandidates}명\n` +
+    `✅ 승인됨 (노출): ${approvedCandidates}명\n` +
+    `⏳ 승인 대기: ${pendingCandidates}명\n\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `의회 종류별 현황:\n\n` +
+    `시의원: ${siCandidates}명 (승인: ${approvedSi}명)\n` +
+    `구의원: ${guCandidates}명 (승인: ${approvedGu}명)`;
+  
+  ui.alert('승인 통계', message, ui.ButtonSet.OK);
+}
+
