@@ -1,4 +1,4 @@
- import { useState, useMemo } from "react";
+ import { useState, useMemo, useEffect } from "react";
  import { Layout } from "@/components/layout/Layout";
  import { Input } from "@/components/ui/input";
  import { Card, CardContent } from "@/components/ui/card";
@@ -13,49 +13,46 @@
  } from "@/components/ui/select";
  import { Search, MapPin, Users, Building2, UserCircle } from "lucide-react";
  import { siDistricts, seoulGus } from "@/data/districts";
- 
- // Mock data for approved candidates - in real app, this would come from database
- const mockCandidates = [
-   {
-     id: "1",
-     name: "홍길동",
-     party: "무소속",
-     councilType: "si",
-     guName: "종로구",
-     districtName: "종로구가선거구",
-     welfarePolicy: "노인복지시설 확충 및 돌봄 서비스 강화",
-     currentPosition: "사회복지사",
-     approved: true,
-   },
-   {
-     id: "2",
-     name: "김복지",
-     party: "더불어민주당",
-     councilType: "gu",
-     guName: "강남구",
-     districtName: "강남구가선거구",
-     welfarePolicy: "청년 주거지원 정책 확대",
-     currentPosition: "구의원",
-     approved: true,
-   },
- ];
+ import { fetchCandidatesFromSheets, type Candidate } from "@/lib/googleSheets";
  
  export default function CandidatesList() {
    const [searchTerm, setSearchTerm] = useState("");
    const [selectedGu, setSelectedGu] = useState<string>("all");
    const [councilType, setCouncilType] = useState<"si" | "gu">("si");
- 
+   const [candidates, setCandidates] = useState<Candidate[]>([]);
+   const [loading, setLoading] = useState(true);
+
+   // 후보자 데이터 가져오기
+   useEffect(() => {
+     async function loadCandidates() {
+       setLoading(true);
+       try {
+         const data = await fetchCandidatesFromSheets();
+         setCandidates(data);
+       } catch (error) {
+         console.error('Failed to load candidates:', error);
+       } finally {
+         setLoading(false);
+       }
+     }
+     loadCandidates();
+   }, []);
+
    const filteredCandidates = useMemo(() => {
-     return mockCandidates.filter((candidate) => {
+     return candidates.filter((candidate) => {
        const matchesType = candidate.councilType === councilType;
        const matchesSearch =
          candidate.name.includes(searchTerm) ||
-         candidate.districtName.includes(searchTerm) ||
+         candidate.district.includes(searchTerm) ||
          candidate.welfarePolicy?.includes(searchTerm);
-       const matchesGu = selectedGu === "all" || candidate.guName === selectedGu;
+       
+       // district에서 구 이름 추출 (예: "강남구가선거구" -> "강남구")
+       const candidateGu = candidate.district.replace(/[가-차]선거구$/, '');
+       const matchesGu = selectedGu === "all" || candidateGu === selectedGu;
+       
        return matchesType && matchesSearch && matchesGu && candidate.approved;
      });
-   }, [searchTerm, selectedGu, councilType]);
+   }, [searchTerm, selectedGu, councilType, candidates]);
  
    const districts = siDistricts.filter(d => 
      selectedGu === "all" || d.guName === selectedGu

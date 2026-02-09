@@ -70,19 +70,19 @@ function doPost(e) {
       );
     }
     
-    // 선거공보물 업로드
+    // 선거 공보물 업로드
     if (data.electionFlyer && data.electionFlyer.base64) {
-      const flyerFileName = `flyer_${data.name}_${new Date().getTime()}.${data.electionFlyer.extension || 'jpg'}`;
+      const flyerFileName = `flyer_${data.name}_${new Date().getTime()}.${data.electionFlyer.extension || 'pdf'}`;
       flyerUrl = uploadFileToDrive(
         data.electionFlyer.base64,
         flyerFileName,
-        data.electionFlyer.mimeType || 'image/jpeg'
+        data.electionFlyer.mimeType || 'application/pdf'
       );
     }
     
-    // 새 행 추가
+    // 스프레드시트에 데이터 추가
     sheet.appendRow([
-      new Date(), // 타임스탬프
+      new Date().toLocaleString('ko-KR'),
       data.name || '',
       data.birthDate || '',
       data.phone || '',
@@ -91,7 +91,7 @@ function doPost(e) {
       data.district || '',
       data.hasSocialWorkerLicense || '',
       data.hasPaidMembershipFee || '',
-      data.hasElectionOffice || '',
+      data.hasElectionOffice  || '',
       data.electionOfficeAddress || '',
       data.hasKickoffEvent || '',
       data.kickoffEventDate || '',
@@ -122,8 +122,88 @@ function doPost(e) {
   }
 }
 
+/**
+ * GET 요청 처리 - 후보자 데이터 조회
+ */
 function doGet(e) {
-  return ContentService.createTextOutput(
-    JSON.stringify({ message: 'This endpoint accepts POST requests only.' })
-  ).setMimeType(ContentService.MimeType.JSON);
+  try {
+    const action = e.parameter.action;
+    
+    // 후보자 데이터 조회
+    if (action === 'getCandidates') {
+      const spreadsheet = SpreadsheetApp.openById('1nPdF1o1HPVQ4f_Yzl-iq-HWCgJb7m47BN5U2UAm38c0');
+      const sheet = spreadsheet.getSheetByName('출마자 등록');
+      
+      if (!sheet) {
+        return ContentService.createTextOutput(
+          JSON.stringify([])
+        ).setMimeType(ContentService.MimeType.JSON);
+      }
+      
+      // 모든 데이터 가져오기
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+      const rows = data.slice(1);
+      
+      // 헤더 인덱스 찾기
+      const nameIndex = headers.indexOf('이름');
+      const birthDateIndex = headers.indexOf('생년월일');
+      const phoneIndex = headers.indexOf('연락처');
+      const emailIndex = headers.indexOf('이메일');
+      const councilTypeIndex = headers.indexOf('의회 종류');
+      const districtIndex = headers.indexOf('선거구');
+      const socialWorkerIndex = headers.indexOf('사회복지사 자격');
+      const membershipFeeIndex = headers.indexOf('회비 납부');
+      const electionOfficeIndex = headers.indexOf('선거 사무소');
+      const officeAddressIndex = headers.indexOf('사무소 주소');
+      const kickoffEventIndex = headers.indexOf('발대식 유무');
+      const kickoffDateIndex = headers.indexOf('발대식 날짜');
+      const kickoffDetailsIndex = headers.indexOf('발대식 정보');
+      const careerIndex = headers.indexOf('경력 요약');
+      const policiesIndex = headers.indexOf('핵심 정책');
+      const photoUrlIndex = headers.indexOf('후보자 사진 URL');
+      const flyerUrlIndex = headers.indexOf('선거공보물 URL');
+      const isVisibleIndex = headers.indexOf('노출 여부');
+      const timestampIndex = headers.indexOf('타임스탬프');
+      
+      // JSON 변환
+      const candidates = rows
+        .filter(row => row[isVisibleIndex] === true || row[isVisibleIndex] === 'TRUE')
+        .map(row => ({
+          name: row[nameIndex] || '',
+          birthDate: row[birthDateIndex] || '',
+          phone: row[phoneIndex] || '',
+          email: row[emailIndex] || '',
+          councilType: row[councilTypeIndex] || 'si',
+          district: row[districtIndex] || '',
+          hasSocialWorkerLicense: row[socialWorkerIndex] === 'TRUE' || row[socialWorkerIndex] === true,
+          hasPaidMembershipFee: row[membershipFeeIndex] === 'TRUE' || row[membershipFeeIndex] === true,
+          hasElectionOffice: row[electionOfficeIndex] === 'TRUE' || row[electionOfficeIndex] === true,
+          officeAddress: row[officeAddressIndex] || '',
+          hasKickoffEvent: row[kickoffEventIndex] === 'TRUE' || row[kickoffEventIndex] === true,
+          kickoffEventDate: row[kickoffDateIndex] || '',
+          kickoffEventDetails: row[kickoffDetailsIndex] || '',
+          careerSummary: row[careerIndex] || '',
+          welfarePolicy: row[policiesIndex] || '',
+          candidatePhotoUrl: row[photoUrlIndex] || '',
+          electionFlyerUrl: row[flyerUrlIndex] || '',
+          isVisible: row[isVisibleIndex] === true || row[isVisibleIndex] === 'TRUE',
+          timestamp: row[timestampIndex] || ''
+        }));
+      
+      return ContentService.createTextOutput(
+        JSON.stringify(candidates)
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // 기본 응답
+    return ContentService.createTextOutput(
+      JSON.stringify({ message: 'Please specify action=getCandidates' })
+    ).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: false, message: error.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
 }
