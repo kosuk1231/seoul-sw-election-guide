@@ -333,7 +333,11 @@ export default function CandidateRegister() {
                     <Label htmlFor="gu">자치구 *</Label>
                     <Select value={selectedGu} onValueChange={(value) => {
                       setSelectedGu(value);
-                      handleChange("district", "");
+                      if (value === "비례대표") {
+                        handleChange("district", "비례대표");
+                      } else {
+                        handleChange("district", "");
+                      }
                     }}>
                       <SelectTrigger>
                         <SelectValue placeholder="자치구 선택" />
@@ -352,17 +356,21 @@ export default function CandidateRegister() {
                     <Select 
                       value={formData.district} 
                       onValueChange={(value) => handleChange("district", value)}
-                      disabled={!selectedGu}
+                      disabled={!selectedGu || selectedGu === "비례대표"}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder={selectedGu ? "선거구 선택" : "자치구를 먼저 선택하세요"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableDistricts.map((d) => (
-                          <SelectItem key={d.id} value={d.districtName}>
-                            {d.districtName}
-                          </SelectItem>
-                        ))}
+                        {selectedGu === "비례대표" ? (
+                          <SelectItem value="비례대표">비례대표</SelectItem>
+                        ) : (
+                          availableDistricts.map((d) => (
+                            <SelectItem key={d.id} value={d.districtName}>
+                              {d.districtName}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
