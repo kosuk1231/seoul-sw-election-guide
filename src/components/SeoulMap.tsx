@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { fetchCandidatesFromSheets, type Candidate, calculateAge } from "@/lib/googleSheets";
+import { fetchCandidatesFromSheets, type Candidate, calculateAge, getGoogleDriveViewUrl } from "@/lib/googleSheets";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { User, Phone, Mail, Globe, FileText, MapPin, Calendar, Building2, UserCircle, BadgeCheck, Coins } from "lucide-react";
+import { User, Mail, Globe, FileText, MapPin, Calendar, Building2, UserCircle, BadgeCheck, Coins } from "lucide-react";
 
 interface District {
   name: string;
@@ -181,36 +181,40 @@ export function SeoulMap() {
                             )}
                           </div>
                           
-                          <div className="space-y-2 text-sm p-4 bg-muted/30 rounded-lg">
-                             <div className="flex items-center gap-2">
+                          <div className="flex flex-col gap-2 text-sm p-4 bg-muted/30 rounded-lg">
+                              {/* Age Display */}
                               <div>{calculateAge(candidate.birthDate)}</div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Phone className="h-4 w-4 text-muted-foreground" />
-                              <div>{candidate.phone}</div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Mail className="h-4 w-4 text-muted-foreground" />
-                              <div className="break-all">{candidate.email}</div>
-                            </div>
+
+                              {/* Email Display - Explicitly check for email */}
+                              {candidate.email && (
+                                <div className="flex items-center gap-2">
+                                  <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <div className="break-all">{candidate.email}</div>
+                                </div>
+                              )}
+                             
                             {candidate.socialMediaUrl && (
-                              <div className="pt-2 border-t mt-2">
-                                <a 
-                                  href={candidate.socialMediaUrl.startsWith('http') ? candidate.socialMediaUrl : `https://${candidate.socialMediaUrl}`} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-primary hover:underline font-medium"
-                                >
-                                  <Globe className="h-4 w-4" />
-                                  홈페이지/SNS 방문하기
-                                </a>
-                              </div>
-                            )}
+                               <div className="pt-2 border-t mt-2">
+                                 <a 
+                                   href={candidate.socialMediaUrl.startsWith('http') ? candidate.socialMediaUrl : `https://${candidate.socialMediaUrl}`} 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   className="flex items-center gap-2 text-primary hover:underline font-medium"
+                                 >
+                                   <Globe className="h-4 w-4" />
+                                   홈페이지/SNS 방문하기
+                                 </a>
+                               </div>
+                             )}
                           </div>
                           
                           {candidate.electionFlyerUrl && (
                             <Button className="w-full" asChild>
-                              <a href={candidate.electionFlyerUrl} target="_blank" rel="noopener noreferrer">
+                              <a 
+                                href={getGoogleDriveViewUrl(candidate.electionFlyerUrl)} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                              >
                                 <FileText className="mr-2 h-4 w-4" />
                                 선거공보물 보기
                               </a>
