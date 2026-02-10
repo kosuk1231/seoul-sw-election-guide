@@ -20,7 +20,7 @@ import {
    SelectValue,
  } from "@/components/ui/select";
  import { Button } from "@/components/ui/button";
-import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Phone, Mail, Globe, FileText, Calendar, BadgeCheck, Coins, User } from "lucide-react";
+import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, FileText, Calendar, BadgeCheck, Coins, User } from "lucide-react";
  import { siDistricts, seoulGus } from "@/data/districts";
  import { fetchCandidatesFromSheets, type Candidate, calculateAge, getGoogleDriveViewUrl } from "@/lib/googleSheets";
  
@@ -255,17 +255,17 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Phone, Mail, G
                             )}
                           </div>
                           
-                          <div className="space-y-2 text-sm p-4 bg-muted/30 rounded-lg">
-                             <div className="flex items-center gap-2">
-                               {/* 생년월일 라벨 삭제 requested by user */}
-                               <div>{calculateAge(candidate.birthDate)}</div>
-                             </div>
+                          <div className="flex flex-col gap-2 text-sm p-4 bg-muted/30 rounded-lg">
+                              {/* Age Display */}
+                              <div>{calculateAge(candidate.birthDate)}</div>
 
-                             {/* Contact Info */}
-                             <div className="flex items-center gap-2">
-                               <Mail className="h-4 w-4 text-muted-foreground" />
-                               <div className="break-all">{candidate.email}</div>
-                             </div>
+                              {/* Email Display - Explicitly check for email */}
+                              {candidate.email && (
+                                <div className="flex items-center gap-2">
+                                  <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <div className="break-all">{candidate.email}</div>
+                                </div>
+                              )}
                              
                              {candidate.socialMediaUrl && (
                                <div className="pt-2 border-t mt-2">
