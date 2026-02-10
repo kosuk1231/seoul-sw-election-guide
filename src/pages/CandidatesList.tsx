@@ -260,10 +260,7 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Phone, Mail, G
                               {/* 생년월일 라벨 삭제 requested by user */}
                               <div>{calculateAge(candidate.birthDate)}</div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Phone className="h-4 w-4 text-muted-foreground" />
-                              <div>{candidate.phone}</div>
-                            </div>
+
                             <div className="flex items-center gap-2">
                               <Mail className="h-4 w-4 text-muted-foreground" />
                               <div className="break-all">{candidate.email}</div>
