@@ -105,6 +105,28 @@ export function getGoogleDriveImageUrl(url: string | undefined): string | undefi
   return url;
 }
 
+// 구글 드라이브 파일 뷰어 URL로 변환 (미리보기)
+export function getGoogleDriveViewUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  
+  // 이미 view 형식인 경우
+  if (url.includes('drive.google.com/file/d/') && url.includes('/view')) return url;
+
+  // 1. /d/ID/ 패턴 확인
+  const match1 = url.match(/\/d\/(.+?)(\/|$)/);
+  if (match1 && match1[1]) {
+    return `https://drive.google.com/file/d/${match1[1]}/view`;
+  }
+
+  // 2. id=ID 패턴 확인
+  const match2 = url.match(/id=([^&]+)/);
+  if (match2 && match2[1]) {
+    return `https://drive.google.com/file/d/${match2[1]}/view`;
+  }
+  
+  return url;
+}
+
 // 생년월일(YYMMDD)로 만 나이 계산
 export function calculateAge(birthDate: string): string {
   if (!birthDate || birthDate.length !== 6) return birthDate;

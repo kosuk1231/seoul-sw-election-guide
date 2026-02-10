@@ -22,7 +22,7 @@ import {
  import { Button } from "@/components/ui/button";
 import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Phone, Mail, Globe, FileText, Calendar, BadgeCheck, Coins, User } from "lucide-react";
  import { siDistricts, seoulGus } from "@/data/districts";
- import { fetchCandidatesFromSheets, type Candidate, calculateAge } from "@/lib/googleSheets";
+ import { fetchCandidatesFromSheets, type Candidate, calculateAge, getGoogleDriveViewUrl } from "@/lib/googleSheets";
  
  export default function CandidatesList() {
    const [searchTerm, setSearchTerm] = useState("");
@@ -257,32 +257,38 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Phone, Mail, G
                           
                           <div className="space-y-2 text-sm p-4 bg-muted/30 rounded-lg">
                              <div className="flex items-center gap-2">
-                              {/* 생년월일 라벨 삭제 requested by user */}
-                              <div>{calculateAge(candidate.birthDate)}</div>
-                            </div>
+                               {/* 생년월일 라벨 삭제 requested by user */}
+                               <div>{calculateAge(candidate.birthDate)}</div>
+                             </div>
 
-                            <div className="flex items-center gap-2">
-                              <Mail className="h-4 w-4 text-muted-foreground" />
-                              <div className="break-all">{candidate.email}</div>
-                            </div>
-                            {candidate.socialMediaUrl && (
-                              <div className="pt-2 border-t mt-2">
-                                <a 
-                                  href={candidate.socialMediaUrl.startsWith('http') ? candidate.socialMediaUrl : `https://${candidate.socialMediaUrl}`} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-primary hover:underline font-medium"
-                                >
-                                  <Globe className="h-4 w-4" />
-                                  홈페이지/SNS 방문하기
-                                </a>
-                              </div>
-                            )}
+                             {/* Contact Info */}
+                             <div className="flex items-center gap-2">
+                               <Mail className="h-4 w-4 text-muted-foreground" />
+                               <div className="break-all">{candidate.email}</div>
+                             </div>
+                             
+                             {candidate.socialMediaUrl && (
+                               <div className="pt-2 border-t mt-2">
+                                 <a 
+                                   href={candidate.socialMediaUrl.startsWith('http') ? candidate.socialMediaUrl : `https://${candidate.socialMediaUrl}`} 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   className="flex items-center gap-2 text-primary hover:underline font-medium"
+                                 >
+                                   <Globe className="h-4 w-4" />
+                                   홈페이지/SNS 방문하기
+                                 </a>
+                               </div>
+                             )}
                           </div>
                           
                           {candidate.electionFlyerUrl && (
                             <Button className="w-full" asChild>
-                              <a href={candidate.electionFlyerUrl} target="_blank" rel="noopener noreferrer">
+                              <a 
+                                href={getGoogleDriveViewUrl(candidate.electionFlyerUrl)} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                              >
                                 <FileText className="mr-2 h-4 w-4" />
                                 선거공보물 보기
                               </a>

@@ -77,7 +77,7 @@ export default function PolicyProposal() {
     // Here we would typically send to Google Sheets via Apps Script
     // For now, we'll simulate the submission
     try {
-      await submitPolicyToSheets(formData);
+      await submitPolicyToSheets(formData, agreedToTerms);
      
       setIsSubmitted(true);
       toast({
