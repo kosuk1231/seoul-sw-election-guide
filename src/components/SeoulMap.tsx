@@ -26,7 +26,6 @@ const districts: District[] = [
   { name: "성동구" }, { name: "성북구" }, { name: "송파구" },
   { name: "양천구" }, { name: "영등포구" }, { name: "용산구" },
   { name: "은평구" }, { name: "종로구" }, { name: "중구" },
-  { name: "종로구" }, { name: "중구" },
   { name: "중랑구" }, { name: "비례대표" }
 ];
 
