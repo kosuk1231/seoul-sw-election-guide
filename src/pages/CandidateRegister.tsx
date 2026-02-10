@@ -356,10 +356,13 @@ export default function CandidateRegister() {
                     <Select 
                       value={formData.district} 
                       onValueChange={(value) => handleChange("district", value)}
-                      disabled={!selectedGu || selectedGu === "비례대표"}
+                      disabled={!selectedGu}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={selectedGu ? "선거구 선택" : "자치구를 먼저 선택하세요"} />
+                        <SelectValue placeholder={
+                          selectedGu === "비례대표" ? "비례대표" : 
+                          (selectedGu ? "선거구 선택" : "자치구를 먼저 선택하세요")
+                        } />
                       </SelectTrigger>
                       <SelectContent>
                         {selectedGu === "비례대표" ? (
