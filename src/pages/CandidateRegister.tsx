@@ -343,7 +343,11 @@ export default function CandidateRegister() {
                         <SelectValue placeholder="자치구 선택" />
                       </SelectTrigger>
                       <SelectContent>
-                        {seoulGus.map((gu) => (
+                        {seoulGus
+                          .filter(gu => gu !== "비례대표")
+                          .sort((a, b) => a.localeCompare(b, 'ko'))
+                          .concat(seoulGus.includes("비례대표") ? ["비례대표"] : [])
+                          .map((gu) => (
                           <SelectItem key={gu} value={gu}>
                             {gu}
                           </SelectItem>
