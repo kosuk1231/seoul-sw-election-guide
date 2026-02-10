@@ -13,13 +13,6 @@ function doPost(e) {
       // 헤더 추가
       sheet.appendRow([
         '타임스탬프', '이름', '연락처', '이메일', '카테고리', '정책 제목', 
-        '현황 및 문제점', '정책 제안 내용', '기대 효과'
-      ]);
-    }
-    
-    // POST 데이터 파싱
-    const data = JSON.parse(e.postData.contents);
-    
     // 새 행 추가
     sheet.appendRow([
       new Date(), // 타임스탬프
@@ -30,7 +23,9 @@ function doPost(e) {
       data.title || '',
       data.currentIssue || '',
       data.proposedSolution || '',
-      data.expectedEffect || ''
+      data.expectedEffect || '',
+      (data.agreed === 'true' || data.agreed === true) ? '동의함' : '동의안함',
+      JSON.stringify(data) // Debug: 수신된 전체 데이터 저장
     ]);
     
     // 성공 응답

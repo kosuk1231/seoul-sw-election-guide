@@ -24,7 +24,7 @@ export async function submitCandidateToSheets(formData: any, agreedToTerms: bool
   return response;
 }
 
-export async function submitPolicyToSheets(formData: any) {
+export async function submitPolicyToSheets(formData: any, agreed: boolean) {
   const scriptUrl = import.meta.env.VITE_POLICY_SCRIPT_URL;
   
   if (!scriptUrl) {
@@ -47,6 +47,7 @@ export async function submitPolicyToSheets(formData: any) {
       currentIssue: formData.currentIssue,
       proposedSolution: formData.proposedSolution,
       expectedEffect: formData.expectedEffect || '',
+      agreed: String(agreed),
     }),
   });
 
