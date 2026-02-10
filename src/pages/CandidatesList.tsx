@@ -62,20 +62,37 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
   };
 
    const filteredCandidates = useMemo(() => {
-     return candidates.filter((candidate) => {
-       const matchesType = candidate.councilType === councilType;
-       const matchesSearch =
-         candidate.name.includes(searchTerm) ||
-         candidate.district.includes(searchTerm) ||
-         candidate.welfarePolicy?.includes(searchTerm);
-       
-       // district에서 구 이름 추출 (예: "강남구가선거구" -> "강남구")
-       const candidateGu = candidate.district.replace(/[가-차]선거구$/, '');
-       const matchesGu = selectedGu === "all" || candidateGu === selectedGu;
-       
-       return matchesType && matchesSearch && matchesGu && candidate.approved;
-     });
-   }, [searchTerm, selectedGu, councilType, candidates]);
+      const result = candidates.filter((candidate) => {
+        const matchesType = candidate.councilType === councilType;
+        const matchesSearch =
+          candidate.name.includes(searchTerm) ||
+          candidate.district.includes(searchTerm) ||
+          candidate.welfarePolicy?.includes(searchTerm);
+        
+        // district에서 구 이름 추출 (예: "강남구가선거구" -> "강남구")
+        const candidateGu = candidate.district.replace(/[가-차]선거구$/, '');
+        const matchesGu = selectedGu === "all" || candidateGu === selectedGu;
+        
+        return matchesType && matchesSearch && matchesGu && candidate.approved;
+      });
+
+      // 가나다순 정렬 + 비례대표 맨 뒤로
+      return result.sort((a, b) => {
+        // 1. 비례대표 체크 (비례대표가 포함된 경우 맨 뒤로)
+        const isProportionalA = a.district.includes('비례대표');
+        const isProportionalB = b.district.includes('비례대표');
+        
+        if (isProportionalA && !isProportionalB) return 1;
+        if (!isProportionalA && isProportionalB) return -1;
+        
+        // 2. 자치구명 가나다순 정렬
+        const districtCompare = a.district.localeCompare(b.district, 'ko');
+        if (districtCompare !== 0) return districtCompare;
+        
+        // 3. 같은 선거구 내에서는 이름순 정렬
+        return a.name.localeCompare(b.name, 'ko');
+      });
+    }, [searchTerm, selectedGu, councilType, candidates]);
  
    const districts = siDistricts.filter(d => 
      selectedGu === "all" || d.guName === selectedGu
@@ -140,11 +157,15 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
              </SelectTrigger>
              <SelectContent>
                <SelectItem value="all">전체 자치구</SelectItem>
-               {seoulGus.map((gu) => (
-                 <SelectItem key={gu} value={gu}>
-                   {gu}
-                 </SelectItem>
-               ))}
+                {seoulGus
+                  .filter(gu => gu !== "비례대표")
+                  .sort((a, b) => a.localeCompare(b, 'ko'))
+                  .concat(seoulGus.includes("비례대표") ? ["비례대표"] : [])
+                  .map((gu) => (
+                  <SelectItem key={gu} value={gu}>
+                    {gu}
+                  </SelectItem>
+                ))}
              </SelectContent>
            </Select>
          </div>
