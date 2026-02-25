@@ -42,7 +42,52 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  return ContentService.createTextOutput(
-    JSON.stringify({ message: 'This endpoint accepts POST requests only.' })
-  ).setMimeType(ContentService.MimeType.JSON);
+  try {
+    const action = e.parameter.action;
+
+    if (action === 'getStats') {
+      const spreadsheet = SpreadsheetApp.openById('1SFORB19gn_EeQSgd7HhllFMtiKnpw-laHBkM-o1_pMg');
+      const sheet = spreadsheet.getSheetByName('정책 제안');
+      
+      if (!sheet || sheet.getLastRow() <= 1) {
+        return ContentService.createTextOutput(
+          JSON.stringify({ total: 0, categories: {} })
+        ).setMimeType(ContentService.MimeType.JSON);
+      }
+
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+      const categoryIdx = headers.indexOf('카테고리');
+
+      if (categoryIdx === -1) {
+        return ContentService.createTextOutput(
+          JSON.stringify({ total: 0, categories: {} })
+        ).setMimeType(ContentService.MimeType.JSON);
+      }
+
+      const categories = {};
+      let total = 0;
+
+      for (let i = 1; i < data.length; i++) {
+        const cat = data[i][categoryIdx];
+        if (cat && String(cat).trim() !== '') {
+          const catName = String(cat).trim();
+          categories[catName] = (categories[catName] || 0) + 1;
+          total++;
+        }
+      }
+
+      return ContentService.createTextOutput(
+        JSON.stringify({ total: total, categories: categories })
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(
+      JSON.stringify({ message: 'Invalid action. Use action=getStats.' })
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ error: error.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
 }

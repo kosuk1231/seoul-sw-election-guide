@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileText, Send, CheckCircle2 } from "lucide-react";
+import { FileText, Send, CheckCircle2, BarChart3, TrendingUp, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { submitPolicyToSheets } from "@/lib/googleSheets";
+import { submitPolicyToSheets, fetchPolicyStats, type PolicyStats } from "@/lib/googleSheets";
 
 const policyCategories = [
  "임금(임금체계 등)",
@@ -29,11 +29,111 @@ const policyCategories = [
  "기타",
 ];
 
+const categoryColors: Record<string, string> = {
+  "임금(임금체계 등)": "#3B82F6",
+  "복리후생": "#10B981",
+  "경력인정 및 승급": "#F59E0B",
+  "고용(인력증원 등)": "#EF4444",
+  "휴가": "#8B5CF6",
+  "안전과 인권": "#EC4899",
+  "일가정양립 등": "#06B6D4",
+  "대시민복지정책": "#F97316",
+  "기타": "#6B7280",
+};
+
+// 인포그래픽 컴포넌트
+function PolicyStatsCard({ stats, loading }: { stats: PolicyStats | null; loading: boolean }) {
+  const sortedCategories = useMemo(() => {
+    if (!stats) return [];
+    return policyCategories.map(cat => ({
+      name: cat,
+      count: stats.categories[cat] || 0,
+      color: categoryColors[cat] || "#6B7280",
+    })).sort((a, b) => b.count - a.count);
+  }, [stats]);
+
+  const maxCount = useMemo(() => {
+    if (!sortedCategories.length) return 1;
+    return Math.max(...sortedCategories.map(c => c.count), 1);
+  }, [sortedCategories]);
+
+  if (loading) {
+    return (
+      <Card className="max-w-2xl mx-auto mb-8">
+        <CardContent className="p-6 sm:p-8">
+          <div className="flex items-center justify-center gap-3 py-8">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            <span className="text-muted-foreground">통계를 불러오는 중...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!stats || stats.total === 0) {
+    return null;
+  }
+
+  return (
+    <Card className="max-w-2xl mx-auto mb-8 overflow-hidden">
+      <CardContent className="p-6 sm:p-8">
+        {/* 총 건수 헤더 */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <BarChart3 className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-foreground">정책 제안 현황</h3>
+            <p className="text-sm text-muted-foreground">
+              총 <span className="font-semibold text-primary">{stats.total}</span>건의 정책이 제안되었습니다
+            </p>
+          </div>
+        </div>
+
+        {/* 카테고리별 바 차트 */}
+        <div className="space-y-3">
+          {sortedCategories.map((cat, index) => (
+            <div key={cat.name} className="group">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-foreground/80 truncate mr-2">
+                  {cat.name}
+                </span>
+                <span className="text-sm font-bold tabular-nums shrink-0" style={{ color: cat.color }}>
+                  {cat.count}건
+                </span>
+              </div>
+              <div className="w-full h-6 bg-muted/50 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-1000 ease-out"
+                  style={{
+                    width: cat.count > 0 ? `${Math.max((cat.count / maxCount) * 100, 4)}%` : '0%',
+                    backgroundColor: cat.color,
+                    opacity: 0.85,
+                    animationDelay: `${index * 100}ms`,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 참여 독려 */}
+        <div className="mt-6 pt-4 border-t flex items-center gap-2 text-sm text-muted-foreground">
+          <TrendingUp className="h-4 w-4 text-primary" />
+          아래 양식을 통해 현장의 목소리를 전달해주세요!
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function PolicyProposal() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [policyStats, setPolicyStats] = useState<PolicyStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     organization: "",
@@ -46,6 +146,22 @@ export default function PolicyProposal() {
     expectedEffect: "",
   });
 
+  // 정책 통계 가져오기
+  useEffect(() => {
+    async function loadStats() {
+      setStatsLoading(true);
+      try {
+        const data = await fetchPolicyStats();
+        setPolicyStats(data);
+      } catch (error) {
+        console.error('Failed to load policy stats:', error);
+      } finally {
+        setStatsLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
+
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -53,7 +169,6 @@ export default function PolicyProposal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
     if (!agreedToTerms) {
       toast({
         title: "개인정보 수집 동의 필요",
@@ -74,8 +189,6 @@ export default function PolicyProposal() {
 
     setIsSubmitting(true);
 
-    // Here we would typically send to Google Sheets via Apps Script
-    // For now, we'll simulate the submission
     try {
       await submitPolicyToSheets(formData, agreedToTerms);
      
@@ -85,7 +198,6 @@ export default function PolicyProposal() {
         description: "정책 제언에 감사합니다.",
       });
       
-      // 폼 초기화
       setFormData({
         name: "",
         organization: "",
@@ -98,6 +210,16 @@ export default function PolicyProposal() {
         expectedEffect: "",
       });
       setAgreedToTerms(false);
+
+      // 통계 갱신 (캐시 무시)
+      try {
+        localStorage.removeItem('cached_policy_stats');
+        localStorage.removeItem('cached_policy_stats_timestamp');
+        const newStats = await fetchPolicyStats();
+        setPolicyStats(newStats);
+      } catch {
+        // 통계 갱신 실패해도 에러 무시
+      }
     } catch (error) {
       console.error('제출 오류:', error);
       toast({
@@ -155,6 +277,9 @@ export default function PolicyProposal() {
             제안해주신 내용은 후보자들에게 전달되어 정책 개발에 활용됩니다.
           </p>
         </div>
+
+        {/* 인포그래픽 섹션 */}
+        <PolicyStatsCard stats={policyStats} loading={statsLoading} />
 
         {/* Form */}
         <Card className="max-w-2xl mx-auto">

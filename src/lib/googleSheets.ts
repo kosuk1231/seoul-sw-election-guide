@@ -263,3 +263,77 @@ export async function fetchCandidatesFromSheets(forceRefresh = false): Promise<C
     return [];
   }
 }
+
+// 정책 제안 통계 타입
+export interface PolicyStats {
+  total: number;
+  categories: Record<string, number>;
+}
+
+const POLICY_CACHE_KEY = 'cached_policy_stats';
+const POLICY_CACHE_TIMESTAMP_KEY = 'cached_policy_stats_timestamp';
+const POLICY_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
+/**
+ * Google Sheets에서 정책 제안 카테고리별 통계를 가져옵니다
+ */
+export async function fetchPolicyStats(): Promise<PolicyStats> {
+  const scriptUrl = import.meta.env.VITE_POLICY_SCRIPT_URL;
+
+  if (!scriptUrl) {
+    console.error('Policy Script URL이 설정되지 않았습니다.');
+    return { total: 0, categories: {} };
+  }
+
+  // Check Cache
+  try {
+    const cachedData = localStorage.getItem(POLICY_CACHE_KEY);
+    const cachedTimestamp = localStorage.getItem(POLICY_CACHE_TIMESTAMP_KEY);
+
+    if (cachedData && cachedTimestamp) {
+      const now = new Date().getTime();
+      if (now - parseInt(cachedTimestamp) < POLICY_CACHE_DURATION) {
+        console.log('Serving policy stats from cache');
+        return JSON.parse(cachedData);
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to read policy stats from cache', e);
+  }
+
+  try {
+    const url = new URL(scriptUrl);
+    url.searchParams.append('action', 'getStats');
+    url.searchParams.append('t', String(new Date().getTime()));
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      console.error('Failed to fetch policy stats:', response.statusText);
+      return { total: 0, categories: {} };
+    }
+
+    const data = await response.json();
+    const stats: PolicyStats = {
+      total: data.total || 0,
+      categories: data.categories || {},
+    };
+
+    // Save to Cache
+    try {
+      localStorage.setItem(POLICY_CACHE_KEY, JSON.stringify(stats));
+      localStorage.setItem(POLICY_CACHE_TIMESTAMP_KEY, String(new Date().getTime()));
+    } catch (e) {
+      console.warn('Failed to save policy stats to cache', e);
+    }
+
+    return stats;
+  } catch (error) {
+    console.error('Error fetching policy stats:', error);
+    return { total: 0, categories: {} };
+  }
+}
