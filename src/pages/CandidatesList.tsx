@@ -70,7 +70,7 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
           candidate.welfarePolicy?.includes(searchTerm);
         
         // district에서 구 이름 추출 (예: "강남구가선거구" -> "강남구")
-        const candidateGu = candidate.district.replace(/[가-차]선거구$/, '');
+        const candidateGu = candidate.district.replace(/([가-차]|제\d+)선거구$/, '');
         const matchesGu = selectedGu === "all" || candidateGu === selectedGu;
         
         return matchesType && matchesSearch && matchesGu && candidate.approved;
