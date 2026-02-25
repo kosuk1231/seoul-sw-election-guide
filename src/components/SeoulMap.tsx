@@ -1,4 +1,4 @@
-jdimport { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { fetchCandidatesFromSheets, type Candidate, calculateAge, getGoogleDriveViewUrl } from "@/lib/googleSheets";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
