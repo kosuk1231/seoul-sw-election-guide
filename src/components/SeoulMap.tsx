@@ -55,7 +55,7 @@ export function SeoulMap() {
     if (!selectedDistrict) return [];
     return candidates.filter(candidate => {
        // district에서 구 이름 추출 (예: "강남구가선거구" -> "강남구")
-       const candidateGu = candidate.district.replace(/([가-차]|제\d+)선거구$/, '');
+       const candidateGu = candidate.district.replace(/([가-차]|제?\d+)선거구$/, '');
        return candidateGu === selectedDistrict && candidate.approved;
     });
   }, [selectedDistrict, candidates]);
