@@ -67,12 +67,12 @@ const Index = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-foreground mb-4">6.3 지방선거 출마자 등록</h3>
                 <p className="text-base text-muted-foreground leading-relaxed mb-6">
-                  2026 6.3 지방선거에서 서울시의 시의원·구의원 출마를 준비하시는 분들의 정보를 등록해주세요. 사회복지사 자격증 및 회비 납부 여부를 확인 후 공개처리 됩니다.
+                  2026 6.3 지방선거에서 서울시의 구청장·시의원·구의원 출마를 준비하시는 분들의 정보를 등록해주세요. 사회복지사 자격증 및 회비 납부 여부를 확인 후 공개처리 됩니다.
                 </p>
                 <ul className="space-y-2 text-sm text-muted-foreground mb-6">
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    시의원 / 구의원 출마 등록
+                    구청장 / 시의원 / 구의원 출마 등록
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -149,7 +149,7 @@ const Index = () => {
                 </h2>
                 <p className="text-base text-muted-foreground mb-8 max-w-lg mx-auto">
                   관리자 승인을 받은 예비후보자들의 정보를 선거구별로 확인하세요.
-                  시의원, 구의원 후보자를 한눈에 볼 수 있습니다.
+                  구청장, 시의원, 구의원 후보자를 한눈에 볼 수 있습니다.
                 </p>
                 <Button asChild size="lg" variant="outline" className="gap-2">
                   <Link to="/candidates">
@@ -168,7 +168,7 @@ const Index = () => {
       <section className="py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 sm:grid-cols-3 max-w-3xl mx-auto">
-            <StatCard number="25" label="서울시 자치구" />
+            <StatCard number="25" label="구청장 선거구" />
             <StatCard number="112" label="시의원 선거구" />
             <StatCard number="112" label="구의원 선거구" />
           </div>

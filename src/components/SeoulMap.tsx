@@ -116,7 +116,7 @@ export function SeoulMap() {
                             </div>
                           )}
                           <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                            {candidate.councilType === "si" ? "시의원" : "구의원"}
+                            {candidate.councilType === "si" ? "시의원" : candidate.councilType === "gucheong" ? "구청장" : "구의원"}
                           </div>
                         </div>
                         
@@ -159,7 +159,7 @@ export function SeoulMap() {
                           )}
                         </DialogTitle>
                         <DialogDescription className="text-lg text-foreground/80 mt-2">
-                          {candidate.district} | {candidate.councilType === "si" ? "시의원" : "구의원"} 예비후보
+                          {candidate.district} | {candidate.councilType === "si" ? "시의원" : candidate.councilType === "gucheong" ? "구청장" : "구의원"} 예비후보
                         </DialogDescription>
                       </DialogHeader>
                       

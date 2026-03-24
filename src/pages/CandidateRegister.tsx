@@ -23,6 +23,7 @@ import { submitCandidateToSheets } from "@/lib/googleSheets";
 const councilTypes = [
   { value: "si", label: "시의원" },
   { value: "gu", label: "구의원" },
+  { value: "gucheong", label: "구청장" },
 ];
 
 export default function CandidateRegister() {
@@ -305,7 +306,16 @@ export default function CandidateRegister() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="councilType">출마 유형 *</Label>
-                    <Select value={formData.councilType} onValueChange={(value) => handleChange("councilType", value)}>
+                    <Select value={formData.councilType} onValueChange={(value) => {
+                      handleChange("councilType", value);
+                      // 구청장 선택 시 이미 자치구가 선택되어 있으면 선거구를 자치구로 자동 설정
+                      if (value === "gucheong" && selectedGu && selectedGu !== "비례대표") {
+                        handleChange("district", selectedGu);
+                      } else if (value !== "gucheong") {
+                        // 구청장에서 다른 유형으로 변경 시 선거구 초기화
+                        handleChange("district", "");
+                      }
+                    }}>
                       <SelectTrigger>
                         <SelectValue placeholder="선택" />
                       </SelectTrigger>
@@ -335,6 +345,8 @@ export default function CandidateRegister() {
                       setSelectedGu(value);
                       if (value === "비례대표") {
                         handleChange("district", "비례대표");
+                      } else if (formData.councilType === "gucheong") {
+                        handleChange("district", value);
                       } else {
                         handleChange("district", "");
                       }
@@ -360,16 +372,19 @@ export default function CandidateRegister() {
                     <Select 
                       value={formData.district} 
                       onValueChange={(value) => handleChange("district", value)}
-                      disabled={!selectedGu}
+                      disabled={!selectedGu || formData.councilType === "gucheong"}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder={
+                          formData.councilType === "gucheong" && selectedGu && selectedGu !== "비례대표" ? selectedGu :
                           selectedGu === "비례대표" ? "비례대표" : 
                           (selectedGu ? "선거구 선택" : "자치구를 먼저 선택하세요")
                         } />
                       </SelectTrigger>
                       <SelectContent>
-                        {selectedGu === "비례대표" ? (
+                        {formData.councilType === "gucheong" && selectedGu && selectedGu !== "비례대표" ? (
+                          <SelectItem value={selectedGu}>{selectedGu}</SelectItem>
+                        ) : selectedGu === "비례대표" ? (
                           <SelectItem value="비례대표">비례대표</SelectItem>
                         ) : (
                           availableDistricts.map((d) => (

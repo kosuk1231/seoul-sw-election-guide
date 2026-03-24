@@ -61,7 +61,7 @@ export interface Candidate {
   birthDate: string;
   phone: string;
   email: string;
-  councilType: 'si' | 'gu';
+  councilType: 'si' | 'gu' | 'gucheong';
   district: string;
   party?: string;
   currentPosition?: string;

@@ -27,7 +27,7 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
  export default function CandidatesList() {
    const [searchTerm, setSearchTerm] = useState("");
    const [selectedGu, setSelectedGu] = useState<string>("all");
-   const [councilType, setCouncilType] = useState<"si" | "gu">("si");
+    const [councilType, setCouncilType] = useState<"si" | "gu" | "gucheong">("si");
    const [candidates, setCandidates] = useState<Candidate[]>([]);
    const [loading, setLoading] = useState(true);
    const [refreshing, setRefreshing] = useState(false);
@@ -127,18 +127,22 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
         </div>
  
          {/* Council Type Tabs */}
-         <Tabs value={councilType} onValueChange={(v) => setCouncilType(v as "si" | "gu")} className="mb-6">
-           <TabsList className="grid w-full max-w-md grid-cols-2">
-             <TabsTrigger value="si" className="gap-2">
-               <Users className="h-4 w-4" />
-               시의원
-             </TabsTrigger>
-             <TabsTrigger value="gu" className="gap-2">
-               <Building2 className="h-4 w-4" />
-               구의원
-             </TabsTrigger>
-           </TabsList>
-         </Tabs>
+          <Tabs value={councilType} onValueChange={(v) => setCouncilType(v as "si" | "gu" | "gucheong")} className="mb-6">
+            <TabsList className="grid w-full max-w-lg grid-cols-3">
+              <TabsTrigger value="gucheong" className="gap-2">
+                <Building2 className="h-4 w-4" />
+                구청장
+              </TabsTrigger>
+              <TabsTrigger value="si" className="gap-2">
+                <Users className="h-4 w-4" />
+                시의원
+              </TabsTrigger>
+              <TabsTrigger value="gu" className="gap-2">
+                <Building2 className="h-4 w-4" />
+                구의원
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
  
          {/* Filters */}
          <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -195,7 +199,7 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
                             </div>
                           )}
                           <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                            {candidate.councilType === "si" ? "시의원" : "구의원"}
+                            {candidate.councilType === "si" ? "시의원" : candidate.councilType === "gucheong" ? "구청장" : "구의원"}
                           </div>
                         </div>
                         
@@ -254,7 +258,7 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
                           )}
                         </DialogTitle>
                         <DialogDescription className="text-lg text-foreground/80 mt-2">
-                          {candidate.district} | {candidate.councilType === "si" ? "시의원" : "구의원"} 예비후보
+                          {candidate.district} | {candidate.councilType === "si" ? "시의원" : candidate.councilType === "gucheong" ? "구청장" : "구의원"} 예비후보
                         </DialogDescription>
                       </DialogHeader>
                       
@@ -405,7 +409,7 @@ import { Search, MapPin, Users, Building2, UserCircle, RefreshCw, Mail, Globe, F
              </h3>
              <p className="text-muted-foreground max-w-md mx-auto">
                {selectedGu !== "all" 
-                 ? `${selectedGu}에 등록된 ${councilType === "si" ? "시의원" : "구의원"} 예비후보가 아직 없습니다.`
+                 ? `${selectedGu}에 등록된 ${councilType === "si" ? "시의원" : councilType === "gucheong" ? "구청장" : "구의원"} 예비후보가 아직 없습니다.`
                  : "아직 승인된 예비후보자가 없습니다. 후보자 등록을 기다려주세요."}
              </p>
            </div>
