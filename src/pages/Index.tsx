@@ -169,8 +169,8 @@ const Index = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 sm:grid-cols-3 max-w-3xl mx-auto">
             <StatCard number="25" label="구청장 선거구" />
-            <StatCard number="112" label="시의원 선거구" />
-            <StatCard number="112" label="구의원 선거구" />
+            <StatCard number="101" label="시의원 선거구" />
+            <StatCard number="154" label="구의원 선거구" />
           </div>
         </div>
       </section>
